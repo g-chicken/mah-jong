@@ -1,0 +1,20 @@
+version: "3.1"
+
+services:
+  app:
+    image: golang:1.17.2
+    command: sh -c "cd /go/src/app && make setup-dev && make run"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app:/go/src/app
+  db:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: "hoge"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./rdb/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./rdb/conf:/etc/mysql/conf.d/

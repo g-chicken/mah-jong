@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package app.services.player.v1;
+
+option go_package = "app/services/player/v1;player";
+
+message Player {
+  uint32 id = 1;
+  string name = 2;
+}
+
+service PlayerService {
+  // CreatePlayer creates a player.
+  // If the name have already exist in DB, return conflict error.
+  rpc CreatePlayer(CreateRequest) returns (CreateResponse);
+  // FetchPlayers search for players.
+  // If it is no player in DB, return empty list.
+  rpc FetchPlayers(FetchPlayersRequest) returns (FetchPlayersResponse);
+}
+
+message CreateRequest {
+  string name = 1;
+}
+
+message CreateResponse {
+  Player player = 1;
+}
+
+message FetchPlayersRequest {
+  // NOTE: may add query field
+}
+
+message FetchPlayersResponse {
+  repeated Player players = 1;
+}

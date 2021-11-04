@@ -1,0 +1,8 @@
+[mysql]
+prompt='\\U [\\d] \\R:\\m:\\s>\\_'
+
+[mysqld]
+character-set-server=utf8
+default-storage-engine=InnoDB
+innodb_file_per_table
+sql_mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
