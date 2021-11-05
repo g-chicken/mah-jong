@@ -11,3 +11,8 @@ import (
 type ConfigUsecase interface {
 	GetConfig(c context.Context) (*domain.Config, error)
 }
+
+// PlayerUsecase defines usecase of player.
+type PlayerUsecase interface {
+	CreatePlayer(c context.Context, name string) (*domain.Player, error)
+}

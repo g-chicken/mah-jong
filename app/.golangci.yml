@@ -21,3 +21,4 @@ issues:
       - funlen
       - paralleltest
       - tparallel
+      - exhaustivestruct

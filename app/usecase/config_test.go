@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/g-chicken/mah-jong/app/domain"
 	mock_domain "github.com/g-chicken/mah-jong/app/mock/domain"
@@ -22,9 +23,12 @@ func TestConfigUsecase_GetConfig(t *testing.T) {
 		{
 			name: "success",
 			setMock: func(m *mock_domain.MockConfigRepository) {
-				m.EXPECT().GetConfig(context.Background()).Return(domain.NewConfig(8080, "url", "name", "user", "pass"), nil)
+				m.EXPECT().GetConfig(context.Background()).Return(
+					domain.NewConfig(8080, "url", "name", "user", "pass", 5*time.Second),
+					nil,
+				)
 			},
-			want: domain.NewConfig(8080, "url", "name", "user", "pass"),
+			want: domain.NewConfig(8080, "url", "name", "user", "pass", 5*time.Second),
 		},
 		{
 			name: "error",

@@ -6,6 +6,7 @@ package mock_domain
 
 import (
 	context "context"
+	sql "database/sql"
 	reflect "reflect"
 
 	domain "github.com/g-chicken/mah-jong/app/domain"
@@ -63,6 +64,105 @@ func (m *MockPlayerRepository) GetPlayerByName(c context.Context, name string) (
 func (mr *MockPlayerRepositoryMockRecorder) GetPlayerByName(c, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerByName", reflect.TypeOf((*MockPlayerRepository)(nil).GetPlayerByName), c, name)
+}
+
+// MockRDBGetterRepository is a mock of RDBGetterRepository interface.
+type MockRDBGetterRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockRDBGetterRepositoryMockRecorder
+}
+
+// MockRDBGetterRepositoryMockRecorder is the mock recorder for MockRDBGetterRepository.
+type MockRDBGetterRepositoryMockRecorder struct {
+	mock *MockRDBGetterRepository
+}
+
+// NewMockRDBGetterRepository creates a new mock instance.
+func NewMockRDBGetterRepository(ctrl *gomock.Controller) *MockRDBGetterRepository {
+	mock := &MockRDBGetterRepository{ctrl: ctrl}
+	mock.recorder = &MockRDBGetterRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRDBGetterRepository) EXPECT() *MockRDBGetterRepositoryMockRecorder {
+	return m.recorder
+}
+
+// GetRDBOperator mocks base method.
+func (m *MockRDBGetterRepository) GetRDBOperator(c context.Context) domain.RDBOperator {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRDBOperator", c)
+	ret0, _ := ret[0].(domain.RDBOperator)
+	return ret0
+}
+
+// GetRDBOperator indicates an expected call of GetRDBOperator.
+func (mr *MockRDBGetterRepositoryMockRecorder) GetRDBOperator(c interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRDBOperator", reflect.TypeOf((*MockRDBGetterRepository)(nil).GetRDBOperator), c)
+}
+
+// MockRDBOperator is a mock of RDBOperator interface.
+type MockRDBOperator struct {
+	ctrl     *gomock.Controller
+	recorder *MockRDBOperatorMockRecorder
+}
+
+// MockRDBOperatorMockRecorder is the mock recorder for MockRDBOperator.
+type MockRDBOperatorMockRecorder struct {
+	mock *MockRDBOperator
+}
+
+// NewMockRDBOperator creates a new mock instance.
+func NewMockRDBOperator(ctrl *gomock.Controller) *MockRDBOperator {
+	mock := &MockRDBOperator{ctrl: ctrl}
+	mock.recorder = &MockRDBOperatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRDBOperator) EXPECT() *MockRDBOperatorMockRecorder {
+	return m.recorder
+}
+
+// Exec mocks base method.
+func (m *MockRDBOperator) Exec(c context.Context, query string, args ...interface{}) (sql.Result, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{c, query}
+	for _, a := range args {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Exec", varargs...)
+	ret0, _ := ret[0].(sql.Result)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Exec indicates an expected call of Exec.
+func (mr *MockRDBOperatorMockRecorder) Exec(c, query interface{}, args ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{c, query}, args...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockRDBOperator)(nil).Exec), varargs...)
+}
+
+// Get mocks base method.
+func (m *MockRDBOperator) Get(c context.Context, query string, args []interface{}, dist ...interface{}) error {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{c, query, args}
+	for _, a := range dist {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Get", varargs...)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockRDBOperatorMockRecorder) Get(c, query, args interface{}, dist ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{c, query, args}, dist...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRDBOperator)(nil).Get), varargs...)
 }
 
 // MockConfigRepository is a mock of ConfigRepository interface.

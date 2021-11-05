@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/g-chicken/mah-jong/app/domain"
 	"github.com/g-chicken/mah-jong/app/logger"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
@@ -18,11 +17,11 @@ type Server struct {
 	logger  *logger.Logger
 }
 
-func NewServer(config *domain.Config) *Server {
+func NewServer(grpcPort int) *Server {
 	l := logger.NewLogger("server")
 	l.Info("server initializing...")
 
-	grpcSrv := newGRPC(config.GetGRPCPort())
+	grpcSrv := newGRPC(grpcPort)
 
 	l.Info("server initialized")
 

@@ -19,8 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PlayerServiceClient interface {
 	// CreatePlayer creates a player.
-	// If the name have already exist in DB, return conflict error.
-	CreatePlayer(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	// If the name have already exist in DB, return the player.
+	CreatePlayer(ctx context.Context, in *CreatePlayerRequest, opts ...grpc.CallOption) (*CreatePlayerResponse, error)
 	// FetchPlayers search for players.
 	// If it is no player in DB, return empty list.
 	FetchPlayers(ctx context.Context, in *FetchPlayersRequest, opts ...grpc.CallOption) (*FetchPlayersResponse, error)
@@ -34,8 +34,8 @@ func NewPlayerServiceClient(cc grpc.ClientConnInterface) PlayerServiceClient {
 	return &playerServiceClient{cc}
 }
 
-func (c *playerServiceClient) CreatePlayer(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
-	out := new(CreateResponse)
+func (c *playerServiceClient) CreatePlayer(ctx context.Context, in *CreatePlayerRequest, opts ...grpc.CallOption) (*CreatePlayerResponse, error) {
+	out := new(CreatePlayerResponse)
 	err := c.cc.Invoke(ctx, "/app.services.player.v1.PlayerService/CreatePlayer", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -57,8 +57,8 @@ func (c *playerServiceClient) FetchPlayers(ctx context.Context, in *FetchPlayers
 // for forward compatibility
 type PlayerServiceServer interface {
 	// CreatePlayer creates a player.
-	// If the name have already exist in DB, return conflict error.
-	CreatePlayer(context.Context, *CreateRequest) (*CreateResponse, error)
+	// If the name have already exist in DB, return the player.
+	CreatePlayer(context.Context, *CreatePlayerRequest) (*CreatePlayerResponse, error)
 	// FetchPlayers search for players.
 	// If it is no player in DB, return empty list.
 	FetchPlayers(context.Context, *FetchPlayersRequest) (*FetchPlayersResponse, error)
@@ -68,7 +68,7 @@ type PlayerServiceServer interface {
 type UnimplementedPlayerServiceServer struct {
 }
 
-func (UnimplementedPlayerServiceServer) CreatePlayer(context.Context, *CreateRequest) (*CreateResponse, error) {
+func (UnimplementedPlayerServiceServer) CreatePlayer(context.Context, *CreatePlayerRequest) (*CreatePlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePlayer not implemented")
 }
 func (UnimplementedPlayerServiceServer) FetchPlayers(context.Context, *FetchPlayersRequest) (*FetchPlayersResponse, error) {
@@ -87,7 +87,7 @@ func RegisterPlayerServiceServer(s grpc.ServiceRegistrar, srv PlayerServiceServe
 }
 
 func _PlayerService_CreatePlayer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+	in := new(CreatePlayerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func _PlayerService_CreatePlayer_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/app.services.player.v1.PlayerService/CreatePlayer",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PlayerServiceServer).CreatePlayer(ctx, req.(*CreateRequest))
+		return srv.(PlayerServiceServer).CreatePlayer(ctx, req.(*CreatePlayerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

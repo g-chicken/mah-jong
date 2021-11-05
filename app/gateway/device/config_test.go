@@ -3,6 +3,7 @@ package device_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/g-chicken/mah-jong/app/domain"
 	"github.com/g-chicken/mah-jong/app/gateway/device"
@@ -18,23 +19,31 @@ func TestConfigRepository_GetConfig(t *testing.T) {
 	}{
 		{
 			name: "default",
-			want: domain.NewConfig(8080, "localhost:3306", "mah_jong", "app", "hoge"),
+			want: domain.NewConfig(8080, "localhost:3306", "mah_jong", "app", "hoge", 5*time.Second),
 		},
 		{
 			name: "full",
 			envs: map[string]string{
-				"MAH_JONG_GRPC_PORT": "7000",
-				"MAH_JONG_RDB_URL":   "mysql:3306",
-				"MAH_JONG_RDB_NAME":  "test",
-				"MAH_JONG_RDB_USER":  "test_user",
-				"MAH_JONG_RDB_PASS":  "test_pass",
+				"MAH_JONG_GRPC_PORT":              "7000",
+				"MAH_JONG_RDB_URL":                "mysql:3306",
+				"MAH_JONG_RDB_NAME":               "test",
+				"MAH_JONG_RDB_USER":               "test_user",
+				"MAH_JONG_RDB_PASS":               "test_pass",
+				"MAH_JONG_RDB_CONNECTION_TIMEOUT": "10m",
 			},
-			want: domain.NewConfig(7000, "mysql:3306", "test", "test_user", "test_pass"),
+			want: domain.NewConfig(7000, "mysql:3306", "test", "test_user", "test_pass", 10*time.Minute),
 		},
 		{
 			name: "not int",
 			envs: map[string]string{
 				"MAH_JONG_GRPC_PORT": "hoge",
+			},
+			err: true,
+		},
+		{
+			name: "invalid duration format",
+			envs: map[string]string{
+				"MAH_JONG_RDB_CONNECTION_TIMEOUT": "hoge",
 			},
 			err: true,
 		},

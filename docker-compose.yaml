@@ -3,7 +3,14 @@ version: "3.1"
 services:
   app:
     image: golang:1.17.2
-    command: sh -c "cd /go/src/app && make setup-dev && make run"
+    command: sh -c "cd /go/src/app && make setup && make run"
+    environment:
+      MAH_JONG_GRPC_PORT: "8080"
+      MAH_JONG_RDB_URL: "db:3306"
+      MAH_JONG_RDB_NAME: "mah_jong"
+      MAH_JONG_RDB_USER: "app"
+      MAH_JONG_RDB_PASS: "hoge"
+      MAH_JONG_RDB_CONNECTION_TIMEOUT: "10s"
     ports:
       - "8080:8080"
     volumes:

@@ -1,5 +1,17 @@
 package domain
 
+import "context"
+
+// GetPlayerByName gets a Player by the name.
+func GetPlayerByName(c context.Context, name string) (*Player, error) {
+	return repos.PlayerRepository.GetPlayerByName(c, name)
+}
+
+// CreatePlayer creates a Player in DB.
+func CreatePlayer(c context.Context, name string) (*Player, error) {
+	return repos.PlayerRepository.CreatePlayer(c, name)
+}
+
 // Player expresses the player model.
 type Player struct {
 	id   uint64

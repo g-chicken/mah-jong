@@ -1,12 +1,26 @@
 //go:generate mockgen -source=$GOFILE -destination=../mock/$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
 package domain
 
-import "context"
+import (
+	"context"
+	"database/sql"
+)
 
 // PlayerRepository defines processes for players.
 type PlayerRepository interface {
 	CreatePlayer(c context.Context, name string) (*Player, error)
 	GetPlayerByName(c context.Context, name string) (*Player, error)
+}
+
+// RDBGetterRepositry defines to fetch DB structure.
+type RDBGetterRepository interface {
+	GetRDBOperator(c context.Context) RDBOperator
+}
+
+// RDBOperator defines operation of RDB.
+type RDBOperator interface {
+	Get(c context.Context, query string, args []interface{}, dist ...interface{}) error
+	Exec(c context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 
 type repositories struct {

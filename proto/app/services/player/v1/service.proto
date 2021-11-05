@@ -11,18 +11,18 @@ message Player {
 
 service PlayerService {
   // CreatePlayer creates a player.
-  // If the name have already exist in DB, return conflict error.
-  rpc CreatePlayer(CreateRequest) returns (CreateResponse);
+  // If the name have already exist in DB, return the player.
+  rpc CreatePlayer(CreatePlayerRequest) returns (CreatePlayerResponse);
   // FetchPlayers search for players.
   // If it is no player in DB, return empty list.
   rpc FetchPlayers(FetchPlayersRequest) returns (FetchPlayersResponse);
 }
 
-message CreateRequest {
+message CreatePlayerRequest {
   string name = 1;
 }
 
-message CreateResponse {
+message CreatePlayerResponse {
   Player player = 1;
 }
 

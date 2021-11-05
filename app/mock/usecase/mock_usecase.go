@@ -49,3 +49,41 @@ func (mr *MockConfigUsecaseMockRecorder) GetConfig(c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConfig", reflect.TypeOf((*MockConfigUsecase)(nil).GetConfig), c)
 }
+
+// MockPlayerUsecase is a mock of PlayerUsecase interface.
+type MockPlayerUsecase struct {
+	ctrl     *gomock.Controller
+	recorder *MockPlayerUsecaseMockRecorder
+}
+
+// MockPlayerUsecaseMockRecorder is the mock recorder for MockPlayerUsecase.
+type MockPlayerUsecaseMockRecorder struct {
+	mock *MockPlayerUsecase
+}
+
+// NewMockPlayerUsecase creates a new mock instance.
+func NewMockPlayerUsecase(ctrl *gomock.Controller) *MockPlayerUsecase {
+	mock := &MockPlayerUsecase{ctrl: ctrl}
+	mock.recorder = &MockPlayerUsecaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPlayerUsecase) EXPECT() *MockPlayerUsecaseMockRecorder {
+	return m.recorder
+}
+
+// CreatePlayer mocks base method.
+func (m *MockPlayerUsecase) CreatePlayer(c context.Context, name string) (*domain.Player, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePlayer", c, name)
+	ret0, _ := ret[0].(*domain.Player)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreatePlayer indicates an expected call of CreatePlayer.
+func (mr *MockPlayerUsecaseMockRecorder) CreatePlayer(c, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayer", reflect.TypeOf((*MockPlayerUsecase)(nil).CreatePlayer), c, name)
+}

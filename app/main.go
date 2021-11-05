@@ -8,8 +8,10 @@ import (
 	"github.com/g-chicken/mah-jong/app/controller/server"
 	"github.com/g-chicken/mah-jong/app/domain"
 	"github.com/g-chicken/mah-jong/app/gateway/device"
+	"github.com/g-chicken/mah-jong/app/gateway/rdb"
 	"github.com/g-chicken/mah-jong/app/logger"
 	"github.com/g-chicken/mah-jong/app/usecase"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
@@ -18,32 +20,68 @@ const (
 )
 
 func main() {
+	grpcPort, closeFunc, err := initialize()
+	if err != nil {
+		closeFunc()
+		log.Printf("fail to initialize (error = %v)", err)
+
+		os.Exit(errorCode)
+	}
+
+	os.Exit(run(grpcPort, closeFunc))
+}
+
+func initialize() (int, func(), error) {
+	// config
+	config, err := getConfig()
+	if err != nil {
+		return config.GetGRPCPort(), func() {}, err
+	}
+
+	// logger
+	if err := logger.SetLogger(); err != nil {
+		return config.GetGRPCPort(), func() { logger.CloseLogger() }, err
+	}
+
+	// repository
+	closeFunc, err := setRepositories(config)
+	if err != nil {
+		return config.GetGRPCPort(), func() {
+			logger.CloseLogger()
+			closeFunc()
+		}, err
+	}
+
+	return config.GetGRPCPort(), func() {
+		logger.CloseLogger()
+		closeFunc()
+	}, nil
+}
+
+func getConfig() (*domain.Config, error) {
 	configRepo := device.NewConfigRepository()
 	configUC := usecase.NewConfigUsecase(configRepo)
 
-	config, err := configUC.GetConfig(context.Background())
-	if err != nil {
-		log.Printf("fail to build config (error = %v)\n", err)
-
-		os.Exit(1)
-	}
-
-	os.Exit(run(config))
+	return configUC.GetConfig(context.Background())
 }
 
-func run(config *domain.Config) int {
-	err := logger.SetLogger()
-	defer logger.CloseLogger()
-
+func setRepositories(config *domain.Config) (func(), error) {
+	rdbGetterRepository, closeFunc, err := rdb.NewRDBGetterRepository(config)
 	if err != nil {
-		log.Printf("fail to build logger (error = %v)\n", err)
-
-		return errorCode
+		return closeFunc, err
 	}
 
-	// domain.SetRepositories(nil)
+	playerRepo := rdb.NewPlayerRepository(rdbGetterRepository)
 
-	srv := server.NewServer(config)
+	domain.SetRepositories(playerRepo)
+
+	return closeFunc, nil
+}
+
+func run(grpcPort int, closeFunc func()) int {
+	defer closeFunc()
+
+	srv := server.NewServer(grpcPort)
 
 	if err := srv.Run(); err != nil {
 		return errorCode

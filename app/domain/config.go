@@ -1,25 +1,30 @@
 package domain
 
+import "time"
+
 // Config expresses config data.
 type Config struct {
-	grpcPort int
-	rdbURL   string
-	rdbName  string
-	rdbUser  string
-	rdbPass  string
+	grpcPort             int
+	rdbURL               string
+	rdbName              string
+	rdbUser              string
+	rdbPass              string
+	rdbConnectionTimeout time.Duration
 }
 
 // NewConfig creates *Config.
 func NewConfig(
 	grpcPort int,
 	rdbURL, rdbName, rdbUser, rdbPass string,
+	rdbConnectionTimeout time.Duration,
 ) *Config {
 	return &Config{
-		grpcPort: grpcPort,
-		rdbURL:   rdbURL,
-		rdbName:  rdbName,
-		rdbUser:  rdbUser,
-		rdbPass:  rdbPass,
+		grpcPort:             grpcPort,
+		rdbURL:               rdbURL,
+		rdbName:              rdbName,
+		rdbUser:              rdbUser,
+		rdbPass:              rdbPass,
+		rdbConnectionTimeout: rdbConnectionTimeout,
 	}
 }
 
@@ -66,4 +71,13 @@ func (c *Config) GetRDBPass() string {
 	}
 
 	return c.rdbPass
+}
+
+// GetRDBConnectionTimeout returns the timeout connecting to RDB.
+func (c *Config) GetRDBConnectionTimeout() time.Duration {
+	if c == nil {
+		return time.Duration(0)
+	}
+
+	return c.rdbConnectionTimeout
 }

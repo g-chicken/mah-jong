@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/g-chicken/mah-jong/app/controller/handler"
 	"github.com/g-chicken/mah-jong/app/domain"
 	"github.com/g-chicken/mah-jong/app/logger"
+	"github.com/g-chicken/mah-jong/app/proto/app/services/player/v1"
+	"github.com/g-chicken/mah-jong/app/usecase"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	"go.uber.org/zap"
@@ -44,6 +47,9 @@ func newGRPC(port int) *grpcSrv {
 		),
 	)
 
+	playerUC := usecase.NewPlayerUsecase()
+
+	player.RegisterPlayerServiceServer(srv, handler.NewPlayerServiceServer(playerUC))
 	grpc_health_v1.RegisterHealthServer(srv, health.NewServer())
 
 	reflection.Register(srv)
