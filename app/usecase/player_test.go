@@ -91,3 +91,68 @@ func TestPlayerUsecase_CreatePlayer(t *testing.T) {
 		})
 	}
 }
+
+func TestPlayerUsecase_FetchPlayers(t *testing.T) {
+	testCases := []struct {
+		name    string
+		setMock func(*mocks)
+		want    []*domain.Player
+		err     bool
+	}{
+		{
+			name: "success",
+			setMock: func(m *mocks) {
+				m.playerMock.EXPECT().GetPlayers(context.Background()).Return(
+					[]*domain.Player{
+						domain.NewPlayer(10, "test"),
+						domain.NewPlayer(20, "hoge"),
+					},
+					nil,
+				)
+			},
+			want: []*domain.Player{
+				domain.NewPlayer(10, "test"),
+				domain.NewPlayer(20, "hoge"),
+			},
+		},
+		{
+			name: "empty",
+			setMock: func(m *mocks) {
+				m.playerMock.EXPECT().GetPlayers(context.Background()).Return([]*domain.Player{}, nil)
+			},
+			want: []*domain.Player{},
+		},
+		{
+			name: "error",
+			setMock: func(m *mocks) {
+				m.playerMock.EXPECT().GetPlayers(context.Background()).Return(nil, errors.New("error"))
+			},
+			err: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			mocks, finish := setRepository(t)
+			defer finish()
+
+			tc.setMock(mocks)
+
+			uc := usecase.NewPlayerUsecase()
+			got, err := uc.FetchPlayers(context.Background())
+
+			if tc.err && err == nil {
+				t.Fatal("should be error but not")
+			}
+			if !tc.err && err != nil {
+				t.Fatalf("should not be error but %v", err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, allowUnexported); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

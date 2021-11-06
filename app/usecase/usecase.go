@@ -15,4 +15,5 @@ type ConfigUsecase interface {
 // PlayerUsecase defines usecase of player.
 type PlayerUsecase interface {
 	CreatePlayer(c context.Context, name string) (*domain.Player, error)
+	FetchPlayers(c context.Context) ([]*domain.Player, error)
 }

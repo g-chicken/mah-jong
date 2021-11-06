@@ -66,6 +66,21 @@ func (mr *MockPlayerRepositoryMockRecorder) GetPlayerByName(c, name interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerByName", reflect.TypeOf((*MockPlayerRepository)(nil).GetPlayerByName), c, name)
 }
 
+// GetPlayers mocks base method.
+func (m *MockPlayerRepository) GetPlayers(c context.Context) ([]*domain.Player, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPlayers", c)
+	ret0, _ := ret[0].([]*domain.Player)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPlayers indicates an expected call of GetPlayers.
+func (mr *MockPlayerRepositoryMockRecorder) GetPlayers(c interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayers", reflect.TypeOf((*MockPlayerRepository)(nil).GetPlayers), c)
+}
+
 // MockRDBGetterRepository is a mock of RDBGetterRepository interface.
 type MockRDBGetterRepository struct {
 	ctrl     *gomock.Controller
@@ -163,6 +178,20 @@ func (mr *MockRDBOperatorMockRecorder) Get(c, query, args interface{}, dist ...i
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{c, query, args}, dist...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockRDBOperator)(nil).Get), varargs...)
+}
+
+// Select mocks base method.
+func (m *MockRDBOperator) Select(c context.Context, query string, args []interface{}, scanFunc func(*sql.Rows) error) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Select", c, query, args, scanFunc)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Select indicates an expected call of Select.
+func (mr *MockRDBOperatorMockRecorder) Select(c, query, args, scanFunc interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Select", reflect.TypeOf((*MockRDBOperator)(nil).Select), c, query, args, scanFunc)
 }
 
 // MockConfigRepository is a mock of ConfigRepository interface.

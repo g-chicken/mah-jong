@@ -7,6 +7,11 @@ func GetPlayerByName(c context.Context, name string) (*Player, error) {
 	return repos.PlayerRepository.GetPlayerByName(c, name)
 }
 
+// GetPlayers gets Players.
+func GetPlayers(c context.Context) ([]*Player, error) {
+	return repos.PlayerRepository.GetPlayers(c)
+}
+
 // CreatePlayer creates a Player in DB.
 func CreatePlayer(c context.Context, name string) (*Player, error) {
 	return repos.PlayerRepository.CreatePlayer(c, name)

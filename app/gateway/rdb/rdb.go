@@ -125,6 +125,64 @@ func (db *dbOperator) Get(
 	return nil
 }
 
+func (db *dbOperator) Select(
+	c context.Context, query string, args []interface{}, scanFunc func(*sql.Rows) error,
+) error {
+	db.logger.Info(
+		"select",
+		zap.String("query", query),
+		zap.Any("args", args),
+	)
+
+	stmt, err := db.db.PrepareContext(c, query)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := stmt.Close(); err != nil {
+			db.logger.Error(
+				"fail to close stmt",
+				zap.String("query", query),
+				zap.Any("args", args),
+				zap.Error(err),
+			)
+		}
+	}()
+
+	rows, err := stmt.QueryContext(c, args...)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			db.logger.Error(
+				"fail to close rows",
+				zap.String("query", query),
+				zap.Any("args", args),
+				zap.Error(err),
+			)
+		}
+	}()
+
+	if err := rows.Err(); err != nil {
+		return err
+	}
+
+	db.logger.Info(
+		"selected",
+		zap.String("query", query),
+		zap.Any("args", args),
+	)
+
+	if err := scanFunc(rows); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (db *dbOperator) Exec(
 	c context.Context, query string, args ...interface{},
 ) (sql.Result, error) {

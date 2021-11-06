@@ -2,6 +2,7 @@ package rdb
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/g-chicken/mah-jong/app/domain"
 )
@@ -52,4 +53,34 @@ func (r *playerRepository) GetPlayerByName(c context.Context, name string) (*dom
 	}
 
 	return domain.NewPlayer(id, playerName), nil
+}
+
+func (r *playerRepository) GetPlayers(c context.Context) ([]*domain.Player, error) {
+	ope := r.repo.GetRDBOperator(c)
+
+	query := "SELECT id, name FROM players ORDER BY id"
+	args := []interface{}{}
+	players := make([]*domain.Player, 0)
+	scanFunc := func(rows *sql.Rows) error {
+		var (
+			id   uint64
+			name string
+		)
+
+		for rows.Next() {
+			if err := rows.Scan(&id, &name); err != nil {
+				return err
+			}
+
+			players = append(players, domain.NewPlayer(id, name))
+		}
+
+		return nil
+	}
+
+	if err := ope.Select(c, query, args, scanFunc); err != nil {
+		return nil, err
+	}
+
+	return players, nil
 }

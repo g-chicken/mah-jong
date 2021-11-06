@@ -26,3 +26,7 @@ func (uc *playerUC) CreatePlayer(c context.Context, name string) (*domain.Player
 		return nil, err
 	}
 }
+
+func (uc *playerUC) FetchPlayers(c context.Context) ([]*domain.Player, error) {
+	return domain.GetPlayers(c)
+}

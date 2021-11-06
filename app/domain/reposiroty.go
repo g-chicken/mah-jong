@@ -10,6 +10,7 @@ import (
 type PlayerRepository interface {
 	CreatePlayer(c context.Context, name string) (*Player, error)
 	GetPlayerByName(c context.Context, name string) (*Player, error)
+	GetPlayers(c context.Context) ([]*Player, error)
 }
 
 // RDBGetterRepositry defines to fetch DB structure.
@@ -20,6 +21,7 @@ type RDBGetterRepository interface {
 // RDBOperator defines operation of RDB.
 type RDBOperator interface {
 	Get(c context.Context, query string, args []interface{}, dist ...interface{}) error
+	Select(c context.Context, query string, args []interface{}, scanFunc func(*sql.Rows) error) error
 	Exec(c context.Context, query string, args ...interface{}) (sql.Result, error)
 }
 

@@ -87,3 +87,18 @@ func (mr *MockPlayerUsecaseMockRecorder) CreatePlayer(c, name interface{}) *gomo
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayer", reflect.TypeOf((*MockPlayerUsecase)(nil).CreatePlayer), c, name)
 }
+
+// FetchPlayers mocks base method.
+func (m *MockPlayerUsecase) FetchPlayers(c context.Context) ([]*domain.Player, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchPlayers", c)
+	ret0, _ := ret[0].([]*domain.Player)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchPlayers indicates an expected call of FetchPlayers.
+func (mr *MockPlayerUsecaseMockRecorder) FetchPlayers(c interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchPlayers", reflect.TypeOf((*MockPlayerUsecase)(nil).FetchPlayers), c)
+}

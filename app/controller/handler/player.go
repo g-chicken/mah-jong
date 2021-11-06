@@ -28,15 +28,15 @@ func (h *playerGRPCHander) CreatePlayer(
 		return nil, domain.NewInvalidArgumentError("no name")
 	}
 
-	p, err := h.playerUC.CreatePlayer(c, name)
+	result, err := h.playerUC.CreatePlayer(c, name)
 	if err != nil {
 		return nil, err
 	}
 
 	return &player.CreatePlayerResponse{
 		Player: &player.Player{
-			Id:   uint32(p.GetID()),
-			Name: p.GetName(),
+			Id:   uint32(result.GetID()),
+			Name: result.GetName(),
 		},
 	}, nil
 }
@@ -45,5 +45,19 @@ func (h *playerGRPCHander) FetchPlayers(
 	c context.Context,
 	req *player.FetchPlayersRequest,
 ) (*player.FetchPlayersResponse, error) {
-	return &player.FetchPlayersResponse{}, nil
+	results, err := h.playerUC.FetchPlayers(c)
+	if err != nil {
+		return nil, err
+	}
+
+	players := make([]*player.Player, 0, len(results))
+
+	for _, result := range results {
+		players = append(
+			players,
+			&player.Player{Id: uint32(result.GetID()), Name: result.GetName()},
+		)
+	}
+
+	return &player.FetchPlayersResponse{Players: players}, nil
 }
