@@ -35,7 +35,7 @@ func (h *playerGRPCHander) CreatePlayer(
 
 	return &player.CreatePlayerResponse{
 		Player: &player.Player{
-			Id:   uint32(result.GetID()),
+			Id:   result.GetID(),
 			Name: result.GetName(),
 		},
 	}, nil
@@ -55,7 +55,7 @@ func (h *playerGRPCHander) FetchPlayers(
 	for _, result := range results {
 		players = append(
 			players,
-			&player.Player{Id: uint32(result.GetID()), Name: result.GetName()},
+			&player.Player{Id: result.GetID(), Name: result.GetName()},
 		)
 	}
 

@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package app.services.hand.v1;
+
+option go_package = "app/services/hand/v1;hand";
+
+import "google/protobuf/timestamp.proto";
+
+message Hand {
+  uint64 id = 1;
+  repeated uint64 participate_player_ids = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message HandScore {
+  uint64 id = 1;
+  repeated uint64 participate_player_ids = 2;
+  google.protobuf.Timestamp timestamp = 3;
+
+  // halfGameScores are half game cores.
+  // for example, map<2, HalfGameScore{}> expresses 2th half game score.
+  map<uint32 /* half game number */, HalfGameScore> half_game_scores = 4;
+
+  // TODO: tip
+
+  message HalfGameScore {
+    repeated PlayerScore player_scores = 1;
+
+    message PlayerScore {
+      uint64 player_id = 1;
+      int32 score = 2;
+      uint32 ranking = 3;
+    }
+  }
+}
+
+service HandService {
+  // CreateHand registers a hand to DB.
+  // If the player_id is not found in DB, returns invalid argument error.
+  rpc CreateHand(CreateHandRequest) returns (CreateHandResponse);
+  // FetchHands fetches all HandSummaries.
+  // If hands is not in DB, returns empty array.
+  rpc FetchHands(FetchHandsRequest) returns (FetchHandsResponse);
+  // FetchHandScore fetches a hand by hand's ID.
+  // If hand's ID is not in DB, return not found error.
+  rpc FetchHandScore(FetchHandScoreRequest) returns (FetchHandScoreResponse);
+}
+
+message CreateHandRequest {
+  google.protobuf.Timestamp timestamp = 1;
+  repeated PlayerScore player_scores = 2;
+  // TODO: tip
+
+  message PlayerScore {
+    uint64 player_id = 1;
+    int32 score = 2;
+    int32 game_number = 3;
+  }
+}
+
+message CreateHandResponse {
+  Hand hand = 1;
+}
+
+message FetchHandsRequest {}
+
+message FetchHandsResponse {
+  repeated Hand hand = 1;
+}
+
+message FetchHandScoreRequest {
+  uint64 id = 1;
+}
+
+message FetchHandScoreResponse {
+  HandScore hand_score = 1;
+}

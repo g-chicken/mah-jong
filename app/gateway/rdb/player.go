@@ -8,11 +8,11 @@ import (
 )
 
 type playerRepository struct {
-	repo domain.RDBGetterRepository
+	repo domain.RDBDetectorRepository
 }
 
 // NewPlayerRepository implements domain.PlayerRepository.
-func NewPlayerRepository(repo domain.RDBGetterRepository) domain.PlayerRepository {
+func NewPlayerRepository(repo domain.RDBDetectorRepository) domain.PlayerRepository {
 	return &playerRepository{
 		repo: repo,
 	}

@@ -8,6 +8,7 @@ import (
 	context "context"
 	sql "database/sql"
 	reflect "reflect"
+	time "time"
 
 	domain "github.com/g-chicken/mah-jong/app/domain"
 	gomock "github.com/golang/mock/gomock"
@@ -81,31 +82,180 @@ func (mr *MockPlayerRepositoryMockRecorder) GetPlayers(c interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayers", reflect.TypeOf((*MockPlayerRepository)(nil).GetPlayers), c)
 }
 
-// MockRDBGetterRepository is a mock of RDBGetterRepository interface.
-type MockRDBGetterRepository struct {
+// MockHalfRoundGameRepository is a mock of HalfRoundGameRepository interface.
+type MockHalfRoundGameRepository struct {
 	ctrl     *gomock.Controller
-	recorder *MockRDBGetterRepositoryMockRecorder
+	recorder *MockHalfRoundGameRepositoryMockRecorder
 }
 
-// MockRDBGetterRepositoryMockRecorder is the mock recorder for MockRDBGetterRepository.
-type MockRDBGetterRepositoryMockRecorder struct {
-	mock *MockRDBGetterRepository
+// MockHalfRoundGameRepositoryMockRecorder is the mock recorder for MockHalfRoundGameRepository.
+type MockHalfRoundGameRepositoryMockRecorder struct {
+	mock *MockHalfRoundGameRepository
 }
 
-// NewMockRDBGetterRepository creates a new mock instance.
-func NewMockRDBGetterRepository(ctrl *gomock.Controller) *MockRDBGetterRepository {
-	mock := &MockRDBGetterRepository{ctrl: ctrl}
-	mock.recorder = &MockRDBGetterRepositoryMockRecorder{mock}
+// NewMockHalfRoundGameRepository creates a new mock instance.
+func NewMockHalfRoundGameRepository(ctrl *gomock.Controller) *MockHalfRoundGameRepository {
+	mock := &MockHalfRoundGameRepository{ctrl: ctrl}
+	mock.recorder = &MockHalfRoundGameRepositoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRDBGetterRepository) EXPECT() *MockRDBGetterRepositoryMockRecorder {
+func (m *MockHalfRoundGameRepository) EXPECT() *MockHalfRoundGameRepositoryMockRecorder {
+	return m.recorder
+}
+
+// CreateHalfRoundGames mocks base method.
+func (m *MockHalfRoundGameRepository) CreateHalfRoundGames(c context.Context, handID uint64, halfRoundGameScores domain.HalfRoundGameScores) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateHalfRoundGames", c, handID, halfRoundGameScores)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateHalfRoundGames indicates an expected call of CreateHalfRoundGames.
+func (mr *MockHalfRoundGameRepositoryMockRecorder) CreateHalfRoundGames(c, handID, halfRoundGameScores interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHalfRoundGames", reflect.TypeOf((*MockHalfRoundGameRepository)(nil).CreateHalfRoundGames), c, handID, halfRoundGameScores)
+}
+
+// MockHandRepository is a mock of HandRepository interface.
+type MockHandRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockHandRepositoryMockRecorder
+}
+
+// MockHandRepositoryMockRecorder is the mock recorder for MockHandRepository.
+type MockHandRepositoryMockRecorder struct {
+	mock *MockHandRepository
+}
+
+// NewMockHandRepository creates a new mock instance.
+func NewMockHandRepository(ctrl *gomock.Controller) *MockHandRepository {
+	mock := &MockHandRepository{ctrl: ctrl}
+	mock.recorder = &MockHandRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockHandRepository) EXPECT() *MockHandRepositoryMockRecorder {
+	return m.recorder
+}
+
+// CreateHand mocks base method.
+func (m *MockHandRepository) CreateHand(c context.Context, timestamp time.Time) (*domain.Hand, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateHand", c, timestamp)
+	ret0, _ := ret[0].(*domain.Hand)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateHand indicates an expected call of CreateHand.
+func (mr *MockHandRepositoryMockRecorder) CreateHand(c, timestamp interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHand", reflect.TypeOf((*MockHandRepository)(nil).CreateHand), c, timestamp)
+}
+
+// MockPlayerHandRepository is a mock of PlayerHandRepository interface.
+type MockPlayerHandRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockPlayerHandRepositoryMockRecorder
+}
+
+// MockPlayerHandRepositoryMockRecorder is the mock recorder for MockPlayerHandRepository.
+type MockPlayerHandRepositoryMockRecorder struct {
+	mock *MockPlayerHandRepository
+}
+
+// NewMockPlayerHandRepository creates a new mock instance.
+func NewMockPlayerHandRepository(ctrl *gomock.Controller) *MockPlayerHandRepository {
+	mock := &MockPlayerHandRepository{ctrl: ctrl}
+	mock.recorder = &MockPlayerHandRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPlayerHandRepository) EXPECT() *MockPlayerHandRepositoryMockRecorder {
+	return m.recorder
+}
+
+// CreatePlayerHandPaires mocks base method.
+func (m *MockPlayerHandRepository) CreatePlayerHandPaires(c context.Context, args []*domain.CreatePlayerHandArgs) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreatePlayerHandPaires", c, args)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreatePlayerHandPaires indicates an expected call of CreatePlayerHandPaires.
+func (mr *MockPlayerHandRepositoryMockRecorder) CreatePlayerHandPaires(c, args interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayerHandPaires", reflect.TypeOf((*MockPlayerHandRepository)(nil).CreatePlayerHandPaires), c, args)
+}
+
+// MockRDBStatementSetRepository is a mock of RDBStatementSetRepository interface.
+type MockRDBStatementSetRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockRDBStatementSetRepositoryMockRecorder
+}
+
+// MockRDBStatementSetRepositoryMockRecorder is the mock recorder for MockRDBStatementSetRepository.
+type MockRDBStatementSetRepositoryMockRecorder struct {
+	mock *MockRDBStatementSetRepository
+}
+
+// NewMockRDBStatementSetRepository creates a new mock instance.
+func NewMockRDBStatementSetRepository(ctrl *gomock.Controller) *MockRDBStatementSetRepository {
+	mock := &MockRDBStatementSetRepository{ctrl: ctrl}
+	mock.recorder = &MockRDBStatementSetRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRDBStatementSetRepository) EXPECT() *MockRDBStatementSetRepositoryMockRecorder {
+	return m.recorder
+}
+
+// Transaction mocks base method.
+func (m *MockRDBStatementSetRepository) Transaction(c context.Context, f func(context.Context) error) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Transaction", c, f)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Transaction indicates an expected call of Transaction.
+func (mr *MockRDBStatementSetRepositoryMockRecorder) Transaction(c, f interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Transaction", reflect.TypeOf((*MockRDBStatementSetRepository)(nil).Transaction), c, f)
+}
+
+// MockRDBDetectorRepository is a mock of RDBDetectorRepository interface.
+type MockRDBDetectorRepository struct {
+	ctrl     *gomock.Controller
+	recorder *MockRDBDetectorRepositoryMockRecorder
+}
+
+// MockRDBDetectorRepositoryMockRecorder is the mock recorder for MockRDBDetectorRepository.
+type MockRDBDetectorRepositoryMockRecorder struct {
+	mock *MockRDBDetectorRepository
+}
+
+// NewMockRDBDetectorRepository creates a new mock instance.
+func NewMockRDBDetectorRepository(ctrl *gomock.Controller) *MockRDBDetectorRepository {
+	mock := &MockRDBDetectorRepository{ctrl: ctrl}
+	mock.recorder = &MockRDBDetectorRepositoryMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRDBDetectorRepository) EXPECT() *MockRDBDetectorRepositoryMockRecorder {
 	return m.recorder
 }
 
 // GetRDBOperator mocks base method.
-func (m *MockRDBGetterRepository) GetRDBOperator(c context.Context) domain.RDBOperator {
+func (m *MockRDBDetectorRepository) GetRDBOperator(c context.Context) domain.RDBOperator {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRDBOperator", c)
 	ret0, _ := ret[0].(domain.RDBOperator)
@@ -113,9 +263,9 @@ func (m *MockRDBGetterRepository) GetRDBOperator(c context.Context) domain.RDBOp
 }
 
 // GetRDBOperator indicates an expected call of GetRDBOperator.
-func (mr *MockRDBGetterRepositoryMockRecorder) GetRDBOperator(c interface{}) *gomock.Call {
+func (mr *MockRDBDetectorRepositoryMockRecorder) GetRDBOperator(c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRDBOperator", reflect.TypeOf((*MockRDBGetterRepository)(nil).GetRDBOperator), c)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRDBOperator", reflect.TypeOf((*MockRDBDetectorRepository)(nil).GetRDBOperator), c)
 }
 
 // MockRDBOperator is a mock of RDBOperator interface.

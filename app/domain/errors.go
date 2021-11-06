@@ -37,3 +37,15 @@ func NewConflictError(msg string) ConflictError {
 func (e ConflictError) Error() string {
 	return fmt.Sprintf("Conflict: %s", e.msg)
 }
+
+type IllegalForeignKeyConstraintError struct {
+	msg string
+}
+
+func NewIllegalForeignKeyConstraintError(msg string) IllegalForeignKeyConstraintError {
+	return IllegalForeignKeyConstraintError{msg: msg}
+}
+
+func (e IllegalForeignKeyConstraintError) Error() string {
+	return fmt.Sprintf("Illegal Foreign Key Constraint: %s", e.msg)
+}

@@ -4,17 +4,17 @@ import "context"
 
 // GetPlayerByName gets a Player by the name.
 func GetPlayerByName(c context.Context, name string) (*Player, error) {
-	return repos.PlayerRepository.GetPlayerByName(c, name)
+	return repos.playerRepo.GetPlayerByName(c, name)
 }
 
 // GetPlayers gets Players.
 func GetPlayers(c context.Context) ([]*Player, error) {
-	return repos.PlayerRepository.GetPlayers(c)
+	return repos.playerRepo.GetPlayers(c)
 }
 
 // CreatePlayer creates a Player in DB.
 func CreatePlayer(c context.Context, name string) (*Player, error) {
-	return repos.PlayerRepository.CreatePlayer(c, name)
+	return repos.playerRepo.CreatePlayer(c, name)
 }
 
 // Player expresses the player model.

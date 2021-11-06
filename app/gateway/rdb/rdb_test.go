@@ -8,7 +8,7 @@ import (
 	"github.com/g-chicken/mah-jong/app/gateway/rdb"
 )
 
-func TestNewRDBGetterRepository(t *testing.T) {
+func TestNewRDBDetectorRepository(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -58,7 +58,7 @@ func TestNewRDBGetterRepository(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, closeFunc, err := rdb.NewRDBGetterRepository(tc.config)
+			_, _, closeFunc, err := rdb.NewRDBDetectorRepository(tc.config)
 			defer closeFunc()
 
 			if tc.err && err == nil {

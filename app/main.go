@@ -66,14 +66,23 @@ func getConfig() (*domain.Config, error) {
 }
 
 func setRepositories(config *domain.Config) (func(), error) {
-	rdbGetterRepository, closeFunc, err := rdb.NewRDBGetterRepository(config)
+	rdbStatementSetRepo, rdbDetector, closeFunc, err := rdb.NewRDBDetectorRepository(config)
 	if err != nil {
 		return closeFunc, err
 	}
 
-	playerRepo := rdb.NewPlayerRepository(rdbGetterRepository)
+	playerRepo := rdb.NewPlayerRepository(rdbDetector)
+	handRepo := rdb.NewHandRepository(rdbDetector)
+	halfRoundGameRepo := rdb.NewHalfRoundGameRepository(rdbDetector)
+	playerHandRepo := rdb.NewPlayerHandRepository(rdbDetector)
 
-	domain.SetRepositories(playerRepo)
+	domain.SetRepositories(
+		playerRepo,
+		handRepo,
+		halfRoundGameRepo,
+		playerHandRepo,
+		rdbStatementSetRepo,
+	)
 
 	return closeFunc, nil
 }

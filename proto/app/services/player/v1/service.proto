@@ -5,7 +5,7 @@ package app.services.player.v1;
 option go_package = "app/services/player/v1;player";
 
 message Player {
-  uint32 id = 1;
+  uint64 id = 1;
   string name = 2;
 }
 

@@ -1,0 +1,192 @@
+package rdb_test
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"testing"
+
+	"github.com/g-chicken/mah-jong/app/domain"
+	"github.com/g-chicken/mah-jong/app/gateway/rdb"
+	"github.com/google/go-cmp/cmp"
+)
+
+func TestHalfRoundGameRepository_CreateHalfRoundGames(t *testing.T) {
+	type want struct {
+		PlayerID   uint64
+		HandID     uint64
+		GameNumber uint32
+		Score      int
+		Ranking    uint32
+	}
+
+	testCases := []struct {
+		name                string
+		handID              uint64
+		halfRoundGameScores domain.HalfRoundGameScores
+		want                []want
+		errFunc             func(error) bool
+	}{
+		{
+			name:   "success",
+			handID: 3,
+			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+				1: {
+					domain.NewPlayerScore(2, 10, 3),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(4, 30, 1),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+				2: {
+					domain.NewPlayerScore(2, 30, 1),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(4, 10, 3),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+			},
+			want: []want{
+				{PlayerID: 2, HandID: 3, GameNumber: 1, Score: 10, Ranking: 3},
+				{PlayerID: 3, HandID: 3, GameNumber: 1, Score: 20, Ranking: 2},
+				{PlayerID: 4, HandID: 3, GameNumber: 1, Score: 30, Ranking: 1},
+				{PlayerID: 5, HandID: 3, GameNumber: 1, Score: -60, Ranking: 4},
+				{PlayerID: 2, HandID: 3, GameNumber: 2, Score: 30, Ranking: 1},
+				{PlayerID: 3, HandID: 3, GameNumber: 2, Score: 20, Ranking: 2},
+				{PlayerID: 4, HandID: 3, GameNumber: 2, Score: 10, Ranking: 3},
+				{PlayerID: 5, HandID: 3, GameNumber: 2, Score: -60, Ranking: 4},
+			},
+			errFunc: notErrFunc,
+		},
+		{
+			name:    "empty",
+			handID:  3,
+			errFunc: notErrFunc,
+		},
+		{
+			name:   "invalid halfRoundGameScores",
+			handID: 3,
+			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+				1: {
+					domain.NewPlayerScore(2, 10, 3),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(3, 30, 1),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+				2: {
+					domain.NewPlayerScore(2, 30, 1),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(4, 10, 3),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+			},
+			errFunc: func(err error) bool { return !errors.As(err, &domain.InvalidArgumentError{}) },
+		},
+		{
+			name:   "not found hand ID",
+			handID: 99,
+			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+				1: {
+					domain.NewPlayerScore(2, 10, 3),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(4, 30, 1),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+				2: {
+					domain.NewPlayerScore(2, 30, 1),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(4, 10, 3),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+			},
+			errFunc: func(err error) bool {
+				return !errors.As(err, &domain.IllegalForeignKeyConstraintError{})
+			},
+		},
+		{
+			name:   "not player ID",
+			handID: 3,
+			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+				1: {
+					domain.NewPlayerScore(99, 10, 3),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(4, 30, 1),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+				2: {
+					domain.NewPlayerScore(2, 30, 1),
+					domain.NewPlayerScore(3, 20, 2),
+					domain.NewPlayerScore(4, 10, 3),
+					domain.NewPlayerScore(5, -60, 4),
+				},
+			},
+			errFunc: func(err error) bool {
+				return !errors.As(err, &domain.IllegalForeignKeyConstraintError{})
+			},
+		},
+		{
+			name:   "conflict",
+			handID: 1,
+			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+				1: {
+					domain.NewPlayerScore(1, 0, 1),
+				},
+			},
+			errFunc: func(err error) bool { return !errors.As(err, &domain.ConflictError{}) },
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			defer initializeHalfRoundGames()
+
+			c := context.Background()
+
+			repo := rdb.NewHalfRoundGameRepository(rdbDetectorRepo)
+			err := repo.CreateHalfRoundGames(c, tc.handID, tc.halfRoundGameScores)
+
+			if tc.errFunc(err) {
+				t.Fatalf("unexpected error (error = %v)", err)
+			}
+
+			if err == nil && len(tc.want) > 0 {
+				query := "SELECT player_id, hand_id, game_number, score, ranking" +
+					" FROM half_round_games WHERE hand_id = ? ORDER BY game_number"
+				args := []interface{}{tc.handID}
+				ope := rdbDetectorRepo.GetRDBOperator(c)
+				got := make([]want, 0, len(tc.want))
+				scanFunc := func(rows *sql.Rows) error {
+					var (
+						playerID   uint64
+						handID     uint64
+						gameNumber uint32
+						score      int
+						ranking    uint32
+					)
+
+					for rows.Next() {
+						_ = rows.Scan(&playerID, &handID, &gameNumber, &score, &ranking)
+						got = append(
+							got,
+							want{
+								PlayerID:   playerID,
+								HandID:     handID,
+								GameNumber: gameNumber,
+								Score:      score,
+								Ranking:    ranking,
+							},
+						)
+					}
+
+					return nil
+				}
+
+				_ = ope.Select(c, query, args, scanFunc)
+
+				if diff := cmp.Diff(tc.want, got); diff != "" {
+					t.Fatalf("unexpected result (-want +got):\n%s", diff)
+				}
+			}
+		})
+	}
+}

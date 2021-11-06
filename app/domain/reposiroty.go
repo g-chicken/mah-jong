@@ -4,17 +4,46 @@ package domain
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
-// PlayerRepository defines processes for players.
+// PlayerRepository defines to operate the players table.
 type PlayerRepository interface {
 	CreatePlayer(c context.Context, name string) (*Player, error)
 	GetPlayerByName(c context.Context, name string) (*Player, error)
 	GetPlayers(c context.Context) ([]*Player, error)
 }
 
-// RDBGetterRepositry defines to fetch DB structure.
-type RDBGetterRepository interface {
+// HalfRoundGameRepository defines to operate the half_round_games table.
+type HalfRoundGameRepository interface {
+	CreateHalfRoundGames(
+		c context.Context, handID uint64, halfRoundGameScores HalfRoundGameScores,
+	) error
+}
+
+// HandRepository defines to operate the hands table.
+type HandRepository interface {
+	CreateHand(c context.Context, timestamp time.Time) (*Hand, error)
+}
+
+// CreatePlayerHandArgs is a argument of CreatePlayerHand method.
+type CreatePlayerHandArgs struct {
+	PlayerID uint64
+	HandID   uint64
+}
+
+// PlayerHandRepository defines to operate the players_hands table.
+type PlayerHandRepository interface {
+	CreatePlayerHandPaires(c context.Context, args []*CreatePlayerHandArgs) error
+}
+
+// RDBStatementSetRepository defines to set statement. (for example, transaction.)
+type RDBStatementSetRepository interface {
+	Transaction(c context.Context, f func(c context.Context) error) error
+}
+
+// RDBDetectorRepositry defines to fetch DB structure.
+type RDBDetectorRepository interface {
 	GetRDBOperator(c context.Context) RDBOperator
 }
 
@@ -26,7 +55,11 @@ type RDBOperator interface {
 }
 
 type repositories struct {
-	PlayerRepository
+	playerRepo          PlayerRepository
+	handRepo            HandRepository
+	halfRoundGameRepo   HalfRoundGameRepository
+	playerHandRepo      PlayerHandRepository
+	rdbStatementSetRepo RDBStatementSetRepository
 }
 
 var repos *repositories
@@ -34,9 +67,17 @@ var repos *repositories
 // SetRepositories set the repos variable.
 func SetRepositories(
 	playerRepo PlayerRepository,
+	handRepo HandRepository,
+	halfRoundGameRepo HalfRoundGameRepository,
+	playerHandRepo PlayerHandRepository,
+	rdbStatementSetRepo RDBStatementSetRepository,
 ) {
 	repos = &repositories{
-		PlayerRepository: playerRepo,
+		playerRepo:          playerRepo,
+		handRepo:            handRepo,
+		halfRoundGameRepo:   halfRoundGameRepo,
+		playerHandRepo:      playerHandRepo,
+		rdbStatementSetRepo: rdbStatementSetRepo,
 	}
 }
 

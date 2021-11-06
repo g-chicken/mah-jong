@@ -15,7 +15,7 @@ func TestPlayerRepository_CreatePlayer(t *testing.T) {
 		testName string
 		argName  string
 		want     *domain.Player
-		errFunc  func(err error) bool
+		errFunc  func(error) bool
 	}{
 		{
 			testName: "success",
@@ -36,8 +36,12 @@ func TestPlayerRepository_CreatePlayer(t *testing.T) {
 		tc := tc
 
 		t.Run(tc.testName, func(t *testing.T) {
-			repo := rdb.NewPlayerRepository(rdbGetterRepo)
-			got, err := repo.CreatePlayer(context.Background(), tc.argName)
+			defer initializePlayers()
+
+			c := context.Background()
+
+			repo := rdb.NewPlayerRepository(rdbDetectorRepo)
+			got, err := repo.CreatePlayer(c, tc.argName)
 
 			if tc.errFunc(err) {
 				t.Fatalf("unexpected error (error = %v)", err)
@@ -46,9 +50,25 @@ func TestPlayerRepository_CreatePlayer(t *testing.T) {
 			if diff := cmp.Diff(tc.want, got, allowUnexported); diff != "" {
 				t.Fatalf("unexpected result (-want +got):\n%s", diff)
 			}
-		})
 
-		initializePlayers()
+			if err == nil {
+				query := "SELECT id, name FROM players WHERE id = ?"
+				args := []interface{}{tc.want.GetID()}
+				ope := rdbDetectorRepo.GetRDBOperator(c)
+
+				var (
+					id   uint64
+					name string
+				)
+
+				_ = ope.Get(c, query, args, &id, &name)
+				p := domain.NewPlayer(id, name)
+
+				if diff := cmp.Diff(tc.want, p, allowUnexported); diff != "" {
+					t.Fatalf("unexpected result (-want +got):\n%s", diff)
+				}
+			}
+		})
 	}
 }
 
@@ -82,7 +102,7 @@ func TestPlayerRepository_GetPlayerByName(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			t.Parallel()
 
-			repo := rdb.NewPlayerRepository(rdbGetterRepo)
+			repo := rdb.NewPlayerRepository(rdbDetectorRepo)
 			got, err := repo.GetPlayerByName(context.Background(), tc.argName)
 
 			if tc.errFunc(err) {
@@ -123,7 +143,7 @@ func TestPlayerRepository_GetPlayers(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
-			repo := rdb.NewPlayerRepository(rdbGetterRepo)
+			repo := rdb.NewPlayerRepository(rdbDetectorRepo)
 			got, err := repo.GetPlayers(context.Background())
 
 			if tc.errFunc(err) {
