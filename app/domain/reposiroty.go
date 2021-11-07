@@ -30,6 +30,7 @@ type HalfRoundGameRepository interface {
 // HandRepository defines to operate the hands table.
 type HandRepository interface {
 	CreateHand(c context.Context, timestamp time.Time) (*Hand, error)
+	GetHands(c context.Context) ([]*Hand, error)
 }
 
 // CreatePlayerHandArgs is a argument of CreatePlayerHand method.
@@ -41,6 +42,7 @@ type CreatePlayerHandArgs struct {
 // PlayerHandRepository defines to operate the players_hands table.
 type PlayerHandRepository interface {
 	CreatePlayerHandPairs(c context.Context, args []*CreatePlayerHandArgs) error
+	ParticipatePlayersInHand(c context.Context, handID uint64) ([]uint64, error)
 }
 
 // RDBStatementSetRepository defines to set statement. (for example, transaction.)

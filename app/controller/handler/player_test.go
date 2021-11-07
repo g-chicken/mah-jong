@@ -19,7 +19,7 @@ func TestPlayerServiceServer_CreatePlayer(t *testing.T) {
 		req     *player.CreatePlayerRequest
 		setMock func(*mock_usecase.MockPlayerUsecase)
 		want    *player.CreatePlayerResponse
-		errFunc func(err error) bool
+		errFunc func(error) bool
 	}{
 		{
 			name: "success",

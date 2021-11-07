@@ -117,4 +117,5 @@ type CreateHandArgumentsPlayerScore struct {
 // HandUsecase defines usecase of hand.
 type HandUsecase interface {
 	CreateHand(c context.Context, args *CreateHandArguments) (*domain.Hand, []uint64, error)
+	FetchHands(c context.Context) ([]*domain.Hand, map[uint64][]uint64 /*  [hand ID] = {plyer IDs} */, error)
 }

@@ -258,3 +258,45 @@ func TestPlayerHandRepository_CreatePlayerHand_Error(t *testing.T) {
 		})
 	}
 }
+
+func TestPlayerHandRepository_ParticipatePlayersInHand(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name   string
+		handID uint64
+		want   []uint64
+		err    bool
+	}{
+		{
+			name:   "success",
+			handID: 2,
+			want:   []uint64{1, 2, 4},
+		},
+		{
+			name:   "no hit",
+			handID: 99,
+			want:   []uint64{},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			repo := rdb.NewPlayerHandRepository(rdbDetectorRepo)
+			got, err := repo.ParticipatePlayersInHand(context.Background(), tc.handID)
+
+			if tc.err && err == nil {
+				t.Fatal("should be error but not")
+			}
+			if !tc.err && err != nil {
+				t.Fatalf("should not be error but %v", err)
+			}
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

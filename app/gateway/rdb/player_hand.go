@@ -2,6 +2,7 @@ package rdb
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -46,4 +47,33 @@ func (r *playerHandRepository) CreatePlayerHandPairs(
 	}
 
 	return nil
+}
+
+func (r *playerHandRepository) ParticipatePlayersInHand(c context.Context, handID uint64) ([]uint64, error) {
+	ope := r.repo.GetRDBOperator(c)
+
+	query := "SELECT DISTINCT player_id FROM players_hands WHERE hand_id = ? ORDER BY player_id"
+	args := []interface{}{handID}
+
+	playerIDs := make([]uint64, 0)
+
+	scanFunc := func(rows *sql.Rows) error {
+		var id uint64
+
+		for rows.Next() {
+			if err := rows.Scan(&id); err != nil {
+				return err
+			}
+
+			playerIDs = append(playerIDs, id)
+		}
+
+		return nil
+	}
+
+	if err := ope.Select(c, query, args, scanFunc); err != nil {
+		return nil, err
+	}
+
+	return playerIDs, nil
 }

@@ -66,5 +66,22 @@ func (h *handGRPCHandler) FetchHands(
 	c context.Context,
 	req *hand.FetchHandsRequest,
 ) (*hand.FetchHandsResponse, error) {
-	return &hand.FetchHandsResponse{}, nil
+	hands, playerIDsInHand, err := h.handUC.FetchHands(c)
+	if err != nil {
+		return nil, err
+	}
+
+	handPBs := make([]*hand.Hand, 0, len(hands))
+
+	for _, h := range hands {
+		handPB := &hand.Hand{
+			Id:                   h.GetID(),
+			ParticipatePlayerIds: playerIDsInHand[h.GetID()],
+			Timestamp:            timestamppb.New(h.GetTimestamp()),
+		}
+
+		handPBs = append(handPBs, handPB)
+	}
+
+	return &hand.FetchHandsResponse{Hands: handPBs}, nil
 }

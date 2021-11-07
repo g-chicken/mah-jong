@@ -68,3 +68,25 @@ func (uc *handUC) CreateHand(
 
 	return hand, playerIDs, nil
 }
+
+func (uc *handUC) FetchHands(
+	c context.Context,
+) ([]*domain.Hand, map[uint64][]uint64 /* [hand ID] = {plyer IDs} */, error) {
+	hands, err := domain.GetHands(c)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	playerIDsInHand := map[uint64][]uint64{}
+
+	for _, hand := range hands {
+		playerIDs, err := domain.ParticipatePlayersInHand(c, hand.GetID())
+		if err != nil {
+			return nil, nil, err
+		}
+
+		playerIDsInHand[hand.GetID()] = playerIDs
+	}
+
+	return hands, playerIDsInHand, nil
+}

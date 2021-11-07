@@ -10,6 +10,11 @@ func CreateHand(c context.Context, timestamp time.Time) (*Hand, error) {
 	return repos.handRepo.CreateHand(c, timestamp)
 }
 
+// GetHands get hands.
+func GetHands(c context.Context) ([]*Hand, error) {
+	return repos.handRepo.GetHands(c)
+}
+
 // Hand is the hand model.
 type Hand struct {
 	id        uint64

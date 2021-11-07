@@ -65,7 +65,7 @@ message CreateHandResponse {
 message FetchHandsRequest {}
 
 message FetchHandsResponse {
-  repeated Hand hand = 1;
+  repeated Hand hands = 1;
 }
 
 message FetchHandScoreRequest {

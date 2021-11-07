@@ -2,6 +2,7 @@ package rdb
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/g-chicken/mah-jong/app/domain"
@@ -35,4 +36,35 @@ func (r *handRepository) CreateHand(c context.Context, timestamp time.Time) (*do
 	}
 
 	return domain.NewHand(uint64(id), timestamp), nil
+}
+
+func (r *handRepository) GetHands(c context.Context) ([]*domain.Hand, error) {
+	ope := r.repo.GetRDBOperator(c)
+
+	query := "SELECT id, game_date FROM hands"
+	results := make([]*domain.Hand, 0)
+	scanFunc := func(rows *sql.Rows) error {
+		var (
+			id        uint64
+			timestamp time.Time
+		)
+
+		for rows.Next() {
+			if err := rows.Scan(&id, &timestamp); err != nil {
+				return err
+			}
+
+			hand := domain.NewHand(id, timestamp)
+
+			results = append(results, hand)
+		}
+
+		return nil
+	}
+
+	if err := ope.Select(c, query, []interface{}{}, scanFunc); err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }

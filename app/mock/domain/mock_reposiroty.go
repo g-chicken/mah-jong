@@ -172,6 +172,21 @@ func (mr *MockHandRepositoryMockRecorder) CreateHand(c, timestamp interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHand", reflect.TypeOf((*MockHandRepository)(nil).CreateHand), c, timestamp)
 }
 
+// GetHands mocks base method.
+func (m *MockHandRepository) GetHands(c context.Context) ([]*domain.Hand, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHands", c)
+	ret0, _ := ret[0].([]*domain.Hand)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHands indicates an expected call of GetHands.
+func (mr *MockHandRepositoryMockRecorder) GetHands(c interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHands", reflect.TypeOf((*MockHandRepository)(nil).GetHands), c)
+}
+
 // MockPlayerHandRepository is a mock of PlayerHandRepository interface.
 type MockPlayerHandRepository struct {
 	ctrl     *gomock.Controller
@@ -207,6 +222,21 @@ func (m *MockPlayerHandRepository) CreatePlayerHandPairs(c context.Context, args
 func (mr *MockPlayerHandRepositoryMockRecorder) CreatePlayerHandPairs(c, args interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayerHandPairs", reflect.TypeOf((*MockPlayerHandRepository)(nil).CreatePlayerHandPairs), c, args)
+}
+
+// ParticipatePlayersInHand mocks base method.
+func (m *MockPlayerHandRepository) ParticipatePlayersInHand(c context.Context, handID uint64) ([]uint64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ParticipatePlayersInHand", c, handID)
+	ret0, _ := ret[0].([]uint64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ParticipatePlayersInHand indicates an expected call of ParticipatePlayersInHand.
+func (mr *MockPlayerHandRepositoryMockRecorder) ParticipatePlayersInHand(c, handID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParticipatePlayersInHand", reflect.TypeOf((*MockPlayerHandRepository)(nil).ParticipatePlayersInHand), c, handID)
 }
 
 // MockRDBStatementSetRepository is a mock of RDBStatementSetRepository interface.
