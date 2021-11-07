@@ -2,6 +2,11 @@ package domain
 
 import "context"
 
+// GetPlayerByID gets a Player by the player ID.
+func GetPlayerByID(c context.Context, playerID uint64) (*Player, error) {
+	return repos.playerRepo.GetPlayerByID(c, playerID)
+}
+
 // GetPlayerByName gets a Player by the name.
 func GetPlayerByName(c context.Context, name string) (*Player, error) {
 	return repos.playerRepo.GetPlayerByName(c, name)

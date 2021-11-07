@@ -8,18 +8,18 @@ import (
 	"github.com/g-chicken/mah-jong/app/usecase"
 )
 
-type playerGRPCHander struct {
+type playerGRPCHandler struct {
 	playerUC usecase.PlayerUsecase
 }
 
-// NewPlayerServiceServer implements PlayerServerServer proto.
+// NewPlayerServiceServer implements PlayerServiceServer proto.
 func NewPlayerServiceServer(playerUC usecase.PlayerUsecase) player.PlayerServiceServer {
-	return &playerGRPCHander{
+	return &playerGRPCHandler{
 		playerUC: playerUC,
 	}
 }
 
-func (h *playerGRPCHander) CreatePlayer(
+func (h *playerGRPCHandler) CreatePlayer(
 	c context.Context,
 	req *player.CreatePlayerRequest,
 ) (*player.CreatePlayerResponse, error) {
@@ -41,7 +41,7 @@ func (h *playerGRPCHander) CreatePlayer(
 	}, nil
 }
 
-func (h *playerGRPCHander) FetchPlayers(
+func (h *playerGRPCHandler) FetchPlayers(
 	c context.Context,
 	req *player.FetchPlayersRequest,
 ) (*player.FetchPlayersResponse, error) {

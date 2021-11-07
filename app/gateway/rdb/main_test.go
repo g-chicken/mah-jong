@@ -33,7 +33,8 @@ var (
 		domain.Hand{},
 		domain.HandScore{},
 	)
-	rdbDetectorRepo domain.RDBDetectorRepository
+	rdbStatementSetRepo domain.RDBStatementSetRepository
+	rdbDetectorRepo     domain.RDBDetectorRepository
 
 	closeFunc func()
 
@@ -271,7 +272,7 @@ func before() {
 	_ = logger.SetLogger()
 
 	config := domain.NewConfig(8080, "localhost:3306", "mah_jong_test", "app", "hoge", 5*time.Second)
-	_, rdbDetectorRepo, closeFunc, _ = rdb.NewRDBDetectorRepository(config)
+	rdbStatementSetRepo, rdbDetectorRepo, closeFunc, _ = rdb.NewRDBDetectorRepository(config)
 
 	setPlayers()
 	setHands()

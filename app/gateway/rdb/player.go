@@ -37,11 +37,24 @@ func (r *playerRepository) CreatePlayer(c context.Context, name string) (*domain
 	return domain.NewPlayer(uint64(id), name), nil
 }
 
-func (r *playerRepository) GetPlayerByName(c context.Context, name string) (*domain.Player, error) {
-	ope := r.repo.GetRDBOperator(c)
+func (r *playerRepository) GetPlayerByID(c context.Context, id uint64) (*domain.Player, error) {
+	query := "SELECT id, name FROM players WHERE id = ?"
+	args := []interface{}{id}
 
+	return r.getPlayer(c, query, args)
+}
+
+func (r *playerRepository) GetPlayerByName(c context.Context, name string) (*domain.Player, error) {
 	query := "SELECT id, name FROM players WHERE name = ?"
 	args := []interface{}{name}
+
+	return r.getPlayer(c, query, args)
+}
+
+func (r *playerRepository) getPlayer(
+	c context.Context, query string, args []interface{},
+) (*domain.Player, error) {
+	ope := r.repo.GetRDBOperator(c)
 
 	var (
 		id         uint64

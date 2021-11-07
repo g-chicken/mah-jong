@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/g-chicken/mah-jong/app/domain"
@@ -137,56 +138,114 @@ func TestHalfRoundGameRepository_CreateHalfRoundGames(t *testing.T) {
 	for _, tc := range testCases {
 		tc := tc
 
+		existTest := func(t *testing.T, c context.Context) {
+			t.Helper()
+
+			query := "SELECT player_id, hand_id, game_number, score, ranking" +
+				" FROM half_round_games WHERE hand_id = ? ORDER BY game_number"
+			args := []interface{}{tc.handID}
+			ope := rdbDetectorRepo.GetRDBOperator(c)
+			got := make([]want, 0, len(tc.want))
+			scanFunc := func(rows *sql.Rows) error {
+				var (
+					playerID   uint64
+					handID     uint64
+					gameNumber uint32
+					score      int
+					ranking    uint32
+				)
+
+				for rows.Next() {
+					_ = rows.Scan(&playerID, &handID, &gameNumber, &score, &ranking)
+
+					got = append(
+						got,
+						want{
+							PlayerID:   playerID,
+							HandID:     handID,
+							GameNumber: gameNumber,
+							Score:      score,
+							Ranking:    ranking,
+						},
+					)
+				}
+
+				return nil
+			}
+
+			_ = ope.Select(c, query, args, scanFunc)
+
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		}
+
 		t.Run(tc.name, func(t *testing.T) {
 			defer initializeHalfRoundGames()
 
 			c := context.Background()
 
-			repo := rdb.NewHalfRoundGameRepository(rdbDetectorRepo)
-			err := repo.CreateHalfRoundGames(c, tc.handID, tc.halfRoundGameScores)
+			testHalfRoundGameRepositoryCreateHalfRoundGamesNomal(
+				c, t, tc.handID, tc.halfRoundGameScores, tc.errFunc,
+			)
 
-			if tc.errFunc(err) {
-				t.Fatalf("unexpected error (error = %v)", err)
-			}
-
-			if err == nil && len(tc.want) > 0 {
-				query := "SELECT player_id, hand_id, game_number, score, ranking" +
-					" FROM half_round_games WHERE hand_id = ? ORDER BY game_number"
-				args := []interface{}{tc.handID}
-				ope := rdbDetectorRepo.GetRDBOperator(c)
-				got := make([]want, 0, len(tc.want))
-				scanFunc := func(rows *sql.Rows) error {
-					var (
-						playerID   uint64
-						handID     uint64
-						gameNumber uint32
-						score      int
-						ranking    uint32
-					)
-
-					for rows.Next() {
-						_ = rows.Scan(&playerID, &handID, &gameNumber, &score, &ranking)
-						got = append(
-							got,
-							want{
-								PlayerID:   playerID,
-								HandID:     handID,
-								GameNumber: gameNumber,
-								Score:      score,
-								Ranking:    ranking,
-							},
-						)
-					}
-
-					return nil
-				}
-
-				_ = ope.Select(c, query, args, scanFunc)
-
-				if diff := cmp.Diff(tc.want, got); diff != "" {
-					t.Fatalf("unexpected result (-want +got):\n%s", diff)
-				}
+			if len(tc.want) > 0 {
+				existTest(t, c)
 			}
 		})
+
+		t.Run(tc.name+"(transaction)", func(t *testing.T) {
+			defer initializeHalfRoundGames()
+
+			c := context.Background()
+
+			testHalfRoundGameRepositoryCreateHalfRoundGamesTransaction(
+				c, t, tc.handID, tc.halfRoundGameScores, tc.errFunc,
+			)
+
+			if len(tc.want) > 0 {
+				existTest(t, c)
+			}
+		})
+	}
+}
+
+func testHalfRoundGameRepositoryCreateHalfRoundGamesNomal(
+	c context.Context,
+	t *testing.T,
+	handID uint64,
+	halfRoundGameScores domain.HalfRoundGameScores,
+	errFunc func(error) bool,
+) {
+	t.Helper()
+
+	repo := rdb.NewHalfRoundGameRepository(rdbDetectorRepo)
+	err := repo.CreateHalfRoundGames(c, handID, halfRoundGameScores)
+
+	if errFunc(err) {
+		t.Fatalf("unexpected error (error = %v)", err)
+	}
+}
+
+func testHalfRoundGameRepositoryCreateHalfRoundGamesTransaction(
+	c context.Context,
+	t *testing.T,
+	handID uint64,
+	halfRoundGameScores domain.HalfRoundGameScores,
+	errFunc func(error) bool,
+) {
+	t.Helper()
+
+	if err := rdbStatementSetRepo.Transaction(c, func(c context.Context) error {
+		repo := rdb.NewHalfRoundGameRepository(rdbDetectorRepo)
+		err := repo.CreateHalfRoundGames(c, handID, halfRoundGameScores)
+
+		if errFunc(err) {
+			return fmt.Errorf("unexpected error (error = %w)", err)
+		}
+
+		return nil
+	}); err != nil {
+		t.Fatalf("should not be error but %v", err)
 	}
 }

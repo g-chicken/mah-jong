@@ -1,6 +1,14 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
+
+// CreateHand creates a hand.
+func CreateHand(c context.Context, timestamp time.Time) (*Hand, error) {
+	return repos.handRepo.CreateHand(c, timestamp)
+}
 
 // Hand is the hand model.
 type Hand struct {

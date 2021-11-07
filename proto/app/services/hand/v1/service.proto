@@ -54,7 +54,7 @@ message CreateHandRequest {
   message PlayerScore {
     uint64 player_id = 1;
     int32 score = 2;
-    int32 game_number = 3;
+    uint32 game_number = 3;
   }
 }
 

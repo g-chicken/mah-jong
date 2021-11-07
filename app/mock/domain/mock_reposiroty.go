@@ -52,6 +52,21 @@ func (mr *MockPlayerRepositoryMockRecorder) CreatePlayer(c, name interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayer", reflect.TypeOf((*MockPlayerRepository)(nil).CreatePlayer), c, name)
 }
 
+// GetPlayerByID mocks base method.
+func (m *MockPlayerRepository) GetPlayerByID(c context.Context, id uint64) (*domain.Player, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPlayerByID", c, id)
+	ret0, _ := ret[0].(*domain.Player)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPlayerByID indicates an expected call of GetPlayerByID.
+func (mr *MockPlayerRepositoryMockRecorder) GetPlayerByID(c, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayerByID", reflect.TypeOf((*MockPlayerRepository)(nil).GetPlayerByID), c, id)
+}
+
 // GetPlayerByName mocks base method.
 func (m *MockPlayerRepository) GetPlayerByName(c context.Context, name string) (*domain.Player, error) {
 	m.ctrl.T.Helper()
@@ -180,18 +195,18 @@ func (m *MockPlayerHandRepository) EXPECT() *MockPlayerHandRepositoryMockRecorde
 	return m.recorder
 }
 
-// CreatePlayerHandPaires mocks base method.
-func (m *MockPlayerHandRepository) CreatePlayerHandPaires(c context.Context, args []*domain.CreatePlayerHandArgs) error {
+// CreatePlayerHandPairs mocks base method.
+func (m *MockPlayerHandRepository) CreatePlayerHandPairs(c context.Context, args []*domain.CreatePlayerHandArgs) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreatePlayerHandPaires", c, args)
+	ret := m.ctrl.Call(m, "CreatePlayerHandPairs", c, args)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// CreatePlayerHandPaires indicates an expected call of CreatePlayerHandPaires.
-func (mr *MockPlayerHandRepositoryMockRecorder) CreatePlayerHandPaires(c, args interface{}) *gomock.Call {
+// CreatePlayerHandPairs indicates an expected call of CreatePlayerHandPairs.
+func (mr *MockPlayerHandRepositoryMockRecorder) CreatePlayerHandPairs(c, args interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayerHandPaires", reflect.TypeOf((*MockPlayerHandRepository)(nil).CreatePlayerHandPaires), c, args)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayerHandPairs", reflect.TypeOf((*MockPlayerHandRepository)(nil).CreatePlayerHandPairs), c, args)
 }
 
 // MockRDBStatementSetRepository is a mock of RDBStatementSetRepository interface.

@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	domain "github.com/g-chicken/mah-jong/app/domain"
+	usecase "github.com/g-chicken/mah-jong/app/usecase"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -101,4 +102,43 @@ func (m *MockPlayerUsecase) FetchPlayers(c context.Context) ([]*domain.Player, e
 func (mr *MockPlayerUsecaseMockRecorder) FetchPlayers(c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchPlayers", reflect.TypeOf((*MockPlayerUsecase)(nil).FetchPlayers), c)
+}
+
+// MockHandUsecase is a mock of HandUsecase interface.
+type MockHandUsecase struct {
+	ctrl     *gomock.Controller
+	recorder *MockHandUsecaseMockRecorder
+}
+
+// MockHandUsecaseMockRecorder is the mock recorder for MockHandUsecase.
+type MockHandUsecaseMockRecorder struct {
+	mock *MockHandUsecase
+}
+
+// NewMockHandUsecase creates a new mock instance.
+func NewMockHandUsecase(ctrl *gomock.Controller) *MockHandUsecase {
+	mock := &MockHandUsecase{ctrl: ctrl}
+	mock.recorder = &MockHandUsecaseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockHandUsecase) EXPECT() *MockHandUsecaseMockRecorder {
+	return m.recorder
+}
+
+// CreateHand mocks base method.
+func (m *MockHandUsecase) CreateHand(c context.Context, args *usecase.CreateHandArguments) (*domain.Hand, []uint64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateHand", c, args)
+	ret0, _ := ret[0].(*domain.Hand)
+	ret1, _ := ret[1].([]uint64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// CreateHand indicates an expected call of CreateHand.
+func (mr *MockHandUsecaseMockRecorder) CreateHand(c, args interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHand", reflect.TypeOf((*MockHandUsecase)(nil).CreateHand), c, args)
 }

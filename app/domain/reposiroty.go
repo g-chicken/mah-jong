@@ -7,9 +7,15 @@ import (
 	"time"
 )
 
+// Transaction set transaction statements.
+func Transaction(c context.Context, transaction func(context.Context) error) error {
+	return repos.rdbStatementSetRepo.Transaction(c, transaction)
+}
+
 // PlayerRepository defines to operate the players table.
 type PlayerRepository interface {
 	CreatePlayer(c context.Context, name string) (*Player, error)
+	GetPlayerByID(c context.Context, id uint64) (*Player, error)
 	GetPlayerByName(c context.Context, name string) (*Player, error)
 	GetPlayers(c context.Context) ([]*Player, error)
 }
@@ -34,7 +40,7 @@ type CreatePlayerHandArgs struct {
 
 // PlayerHandRepository defines to operate the players_hands table.
 type PlayerHandRepository interface {
-	CreatePlayerHandPaires(c context.Context, args []*CreatePlayerHandArgs) error
+	CreatePlayerHandPairs(c context.Context, args []*CreatePlayerHandArgs) error
 }
 
 // RDBStatementSetRepository defines to set statement. (for example, transaction.)

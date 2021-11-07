@@ -19,7 +19,7 @@ func NewPlayerHandRepository(repo domain.RDBDetectorRepository) domain.PlayerHan
 	}
 }
 
-func (r *playerHandRepository) CreatePlayerHandPaires(
+func (r *playerHandRepository) CreatePlayerHandPairs(
 	c context.Context, args []*domain.CreatePlayerHandArgs,
 ) error {
 	if len(args) == 0 {

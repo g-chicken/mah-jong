@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 )
 
@@ -47,6 +48,15 @@ func (h *HandScore) GetHalfGameScores() HalfRoundGameScores {
 	}
 
 	return h.halfRoundGameScores
+}
+
+// CreateHalfRoundGameScores creates player scores of the half round game.
+func CreateHalfRoundGameScores(
+	c context.Context,
+	handID uint64,
+	halfRoundGameScores HalfRoundGameScores,
+) error {
+	return repos.halfRoundGameRepo.CreateHalfRoundGames(c, handID, halfRoundGameScores)
 }
 
 // HalfGameScores is scores of half game.

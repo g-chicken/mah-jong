@@ -8,9 +8,20 @@ import (
 	mock_domain "github.com/g-chicken/mah-jong/app/mock/domain"
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
-var allowUnexported = cmp.AllowUnexported(domain.Config{}, domain.Player{})
+var (
+	allowUnexported = cmp.AllowUnexported(
+		domain.Config{},
+		domain.Player{},
+		domain.PlayerScore{},
+		domain.Hand{},
+	)
+	uintArraySort = cmpopts.SortSlices(func(x, y uint64) bool { return x < y })
+	notErrFunc    = func(err error) bool { return err == nil }
+	errFunc       = func(err error) bool { return err != nil }
+)
 
 func TestMain(m *testing.M) {
 	code := m.Run()
