@@ -59,6 +59,11 @@ func CreateHalfRoundGameScores(
 	return repos.halfRoundGameRepo.CreateHalfRoundGames(c, handID, halfRoundGameScores)
 }
 
+// GetHalfRoundGameScoresByHandID get scores of half round game by hand ID.
+func GetHalfRoundGameScoresByHandID(c context.Context, handID uint64) (HalfRoundGameScores, error) {
+	return repos.halfRoundGameRepo.GetHalfRoundGameScoresByHandID(c, handID)
+}
+
 // HalfGameScores is scores of half game.
 // maximum of []*PlayerScore's length is 4.
 type HalfRoundGameScores map[uint32][]*PlayerScore // key is the game number.

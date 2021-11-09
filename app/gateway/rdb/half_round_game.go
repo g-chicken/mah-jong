@@ -2,6 +2,7 @@ package rdb
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -60,4 +61,52 @@ func (r *halfRoundGameRepository) CreateHalfRoundGames(
 	}
 
 	return nil
+}
+
+func (r *halfRoundGameRepository) GetHalfRoundGameScoresByHandID(
+	c context.Context, handID uint64,
+) (domain.HalfRoundGameScores, error) {
+	query := "SELECT player_id, game_number, score, ranking FROM half_round_games WHERE hand_id = ?"
+	args := []interface{}{handID}
+
+	halfRoundGameScores := domain.HalfRoundGameScores{}
+
+	scanFunc := func(rows *sql.Rows) error {
+		var (
+			playerID   uint64
+			gameNumber uint32
+			score      int
+			ranking    uint32
+		)
+
+		for rows.Next() {
+			if err := rows.Scan(&playerID, &gameNumber, &score, &ranking); err != nil {
+				return err
+			}
+
+			playerScores, ok := halfRoundGameScores[gameNumber]
+			if !ok {
+				halfRoundGameScores[gameNumber] = []*domain.PlayerScore{domain.NewPlayerScore(playerID, score, ranking)}
+
+				continue
+			}
+
+			playerScores = append(playerScores, domain.NewPlayerScore(playerID, score, ranking))
+			halfRoundGameScores[gameNumber] = playerScores
+		}
+
+		return nil
+	}
+
+	ope := r.repo.GetRDBOperator(c)
+
+	if err := ope.Select(c, query, args, scanFunc); err != nil {
+		return nil, err
+	}
+
+	if len(halfRoundGameScores) == 0 {
+		return nil, domain.NewNotFoundError("no scores of half round game")
+	}
+
+	return halfRoundGameScores, nil
 }

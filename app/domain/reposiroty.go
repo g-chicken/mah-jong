@@ -25,12 +25,14 @@ type HalfRoundGameRepository interface {
 	CreateHalfRoundGames(
 		c context.Context, handID uint64, halfRoundGameScores HalfRoundGameScores,
 	) error
+	GetHalfRoundGameScoresByHandID(c context.Context, handID uint64) (HalfRoundGameScores, error)
 }
 
 // HandRepository defines to operate the hands table.
 type HandRepository interface {
 	CreateHand(c context.Context, timestamp time.Time) (*Hand, error)
 	GetHands(c context.Context) ([]*Hand, error)
+	GetHandByID(c context.Context, id uint64) (*Hand, error)
 }
 
 // CreatePlayerHandArgs is a argument of CreatePlayerHand method.

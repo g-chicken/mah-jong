@@ -143,6 +143,23 @@ func (mr *MockHandUsecaseMockRecorder) CreateHand(c, args interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHand", reflect.TypeOf((*MockHandUsecase)(nil).CreateHand), c, args)
 }
 
+// FetchHandScore mocks base method.
+func (m *MockHandUsecase) FetchHandScore(c context.Context, handID uint64) (*domain.Hand, []uint64, domain.HalfRoundGameScores, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchHandScore", c, handID)
+	ret0, _ := ret[0].(*domain.Hand)
+	ret1, _ := ret[1].([]uint64)
+	ret2, _ := ret[2].(domain.HalfRoundGameScores)
+	ret3, _ := ret[3].(error)
+	return ret0, ret1, ret2, ret3
+}
+
+// FetchHandScore indicates an expected call of FetchHandScore.
+func (mr *MockHandUsecaseMockRecorder) FetchHandScore(c, handID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchHandScore", reflect.TypeOf((*MockHandUsecase)(nil).FetchHandScore), c, handID)
+}
+
 // FetchHands mocks base method.
 func (m *MockHandUsecase) FetchHands(c context.Context) ([]*domain.Hand, map[uint64][]uint64, error) {
 	m.ctrl.T.Helper()

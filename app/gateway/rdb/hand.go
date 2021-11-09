@@ -68,3 +68,21 @@ func (r *handRepository) GetHands(c context.Context) ([]*domain.Hand, error) {
 
 	return results, nil
 }
+
+func (r *handRepository) GetHandByID(c context.Context, id uint64) (*domain.Hand, error) {
+	query := "SELECT id, game_date FROM hands WHERE id = ?"
+	args := []interface{}{id}
+
+	var (
+		handID    uint64
+		timestamp time.Time
+	)
+
+	ope := r.repo.GetRDBOperator(c)
+
+	if err := ope.Get(c, query, args, &handID, &timestamp); err != nil {
+		return nil, err
+	}
+
+	return domain.NewHand(handID, timestamp), nil
+}

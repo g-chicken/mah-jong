@@ -13,6 +13,7 @@ import (
 	"github.com/g-chicken/mah-jong/app/logger"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestMain(m *testing.M) {
@@ -32,6 +33,10 @@ var (
 		domain.PlayerScore{},
 		domain.Hand{},
 		domain.HandScore{},
+	)
+	uint64KeySort        = cmpopts.SortMaps(func(x, y uint64) bool { return x < y })
+	playerScoreSliceSort = cmpopts.SortSlices(
+		func(x, y *domain.PlayerScore) bool { return x.GetPlayerID() < y.GetPlayerID() },
 	)
 	rdbStatementSetRepo domain.RDBStatementSetRepository
 	rdbDetectorRepo     domain.RDBDetectorRepository
@@ -158,7 +163,7 @@ var (
 			playerID:   4,
 			handID:     1,
 			gameNumber: 1,
-			score:      50,
+			score:      40,
 			ranking:    1,
 		},
 		{

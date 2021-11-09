@@ -290,6 +290,125 @@ func TestHandUsecase_CreateHand(t *testing.T) {
 	}
 }
 
+func TestHandUsecase_FetchHandScore(t *testing.T) {
+	testCases := []struct {
+		name      string
+		handID    uint64
+		setMock   func(*mocks)
+		hand      *domain.Hand
+		playerIDs []uint64
+		scores    domain.HalfRoundGameScores
+		err       bool
+	}{
+		{
+			name:   "success",
+			handID: 100,
+			setMock: func(m *mocks) {
+				c := context.Background()
+
+				m.handMock.EXPECT().GetHandByID(c, uint64(100)).Return(
+					domain.NewHand(100, time.Date(2021, time.November, 9, 0, 0, 0, 0, time.UTC)),
+					nil,
+				)
+				m.playerHandMock.EXPECT().ParticipatePlayersInHand(c, uint64(100)).Return([]uint64{1, 2, 3, 9}, nil)
+				m.halfRoundGameMock.EXPECT().GetHalfRoundGameScoresByHandID(c, uint64(100)).Return(
+					domain.HalfRoundGameScores{
+						1: []*domain.PlayerScore{
+							domain.NewPlayerScore(1, 10, 2),
+							domain.NewPlayerScore(2, 20, 1),
+							domain.NewPlayerScore(3, -20, 4),
+							domain.NewPlayerScore(9, -10, 3),
+						},
+					},
+					nil,
+				)
+			},
+			hand:      domain.NewHand(100, time.Date(2021, time.November, 9, 0, 0, 0, 0, time.UTC)),
+			playerIDs: []uint64{1, 2, 3, 9},
+			scores: domain.HalfRoundGameScores{
+				1: []*domain.PlayerScore{
+					domain.NewPlayerScore(1, 10, 2),
+					domain.NewPlayerScore(2, 20, 1),
+					domain.NewPlayerScore(3, -20, 4),
+					domain.NewPlayerScore(9, -10, 3),
+				},
+			},
+		},
+		{
+			name:   "error in GetHalfRoundGameScoresByHandID",
+			handID: 100,
+			setMock: func(m *mocks) {
+				c := context.Background()
+
+				m.handMock.EXPECT().GetHandByID(c, uint64(100)).Return(
+					domain.NewHand(100, time.Date(2021, time.November, 9, 0, 0, 0, 0, time.UTC)),
+					nil,
+				)
+				m.playerHandMock.EXPECT().ParticipatePlayersInHand(c, uint64(100)).Return([]uint64{1, 2, 3, 9}, nil)
+				m.halfRoundGameMock.EXPECT().GetHalfRoundGameScoresByHandID(c, uint64(100)).Return(nil, errors.New("error"))
+			},
+			err: true,
+		},
+		{
+			name:   "error in ParticipatePlayersInHand",
+			handID: 100,
+			setMock: func(m *mocks) {
+				c := context.Background()
+
+				m.handMock.EXPECT().GetHandByID(c, uint64(100)).Return(
+					domain.NewHand(100, time.Date(2021, time.November, 9, 0, 0, 0, 0, time.UTC)),
+					nil,
+				)
+				m.playerHandMock.EXPECT().ParticipatePlayersInHand(c, uint64(100)).Return(nil, errors.New("error"))
+			},
+			err: true,
+		},
+		{
+			name:   "error in GetHandByID",
+			handID: 100,
+			setMock: func(m *mocks) {
+				c := context.Background()
+
+				m.handMock.EXPECT().GetHandByID(c, uint64(100)).Return(nil, errors.New("error"))
+			},
+			err: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			mocks, finish := setRepository(t)
+			defer finish()
+
+			tc.setMock(mocks)
+			uc := usecase.NewHandUsecase()
+
+			hand, playerIDs, scores, err := uc.FetchHandScore(context.Background(), tc.handID)
+
+			if tc.err && err == nil {
+				t.Fatal("should be error but not")
+			}
+			if !tc.err && err != nil {
+				t.Fatalf("should not be error but %v", err)
+			}
+
+			if diff := cmp.Diff(tc.hand, hand, allowUnexported); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+
+			if diff := cmp.Diff(tc.playerIDs, playerIDs, allowUnexported); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+
+			if diff := cmp.Diff(tc.scores, scores, allowUnexported); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestHandUsecase_FetcHands(t *testing.T) {
 	testCases := []struct {
 		name            string

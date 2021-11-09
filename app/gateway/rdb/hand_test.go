@@ -2,6 +2,7 @@ package rdb_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -204,4 +205,63 @@ func testHandRepositoryGetHandsTransaction(t *testing.T, name string, want []*do
 			t.Fatalf("should not be error but %v", err)
 		}
 	})
+}
+
+func TestHandRepository_GetHandByID(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name    string
+		id      uint64
+		want    *domain.Hand
+		errFunc func(error) bool
+	}{
+		{
+			name:    "success",
+			id:      2,
+			want:    domain.NewHand(2, time.Date(2021, time.November, 7, 0, 0, 0, 0, time.UTC)),
+			errFunc: notErrFunc,
+		},
+		{
+			name:    "not found",
+			id:      99,
+			errFunc: func(err error) bool { return !errors.As(err, &domain.NotFoundError{}) },
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			repo := rdb.NewHandRepository(rdbDetectorRepo)
+			got, err := repo.GetHandByID(context.Background(), tc.id)
+
+			if tc.errFunc(err) {
+				t.Fatalf("unexpected error (error = %v)", err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, allowUnexported); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		})
+
+		t.Run(tc.name+"(transaction)", func(t *testing.T) {
+			if err := rdbStatementSetRepo.Transaction(context.Background(), func(c context.Context) error {
+				repo := rdb.NewHandRepository(rdbDetectorRepo)
+				got, err := repo.GetHandByID(context.Background(), tc.id)
+
+				if tc.errFunc(err) {
+					return fmt.Errorf("unexpected error (error = %w)", err)
+				}
+
+				if diff := cmp.Diff(tc.want, got, allowUnexported); diff != "" {
+					return fmt.Errorf("unexpected result (-want +got):\n%s", diff)
+				}
+
+				return nil
+			}); err != nil {
+				t.Fatalf("unexpected error (error = %v)", err)
+			}
+		})
+	}
 }

@@ -134,6 +134,21 @@ func (mr *MockHalfRoundGameRepositoryMockRecorder) CreateHalfRoundGames(c, handI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHalfRoundGames", reflect.TypeOf((*MockHalfRoundGameRepository)(nil).CreateHalfRoundGames), c, handID, halfRoundGameScores)
 }
 
+// GetHalfRoundGameScoresByHandID mocks base method.
+func (m *MockHalfRoundGameRepository) GetHalfRoundGameScoresByHandID(c context.Context, handID uint64) (domain.HalfRoundGameScores, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHalfRoundGameScoresByHandID", c, handID)
+	ret0, _ := ret[0].(domain.HalfRoundGameScores)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHalfRoundGameScoresByHandID indicates an expected call of GetHalfRoundGameScoresByHandID.
+func (mr *MockHalfRoundGameRepositoryMockRecorder) GetHalfRoundGameScoresByHandID(c, handID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHalfRoundGameScoresByHandID", reflect.TypeOf((*MockHalfRoundGameRepository)(nil).GetHalfRoundGameScoresByHandID), c, handID)
+}
+
 // MockHandRepository is a mock of HandRepository interface.
 type MockHandRepository struct {
 	ctrl     *gomock.Controller
@@ -170,6 +185,21 @@ func (m *MockHandRepository) CreateHand(c context.Context, timestamp time.Time) 
 func (mr *MockHandRepositoryMockRecorder) CreateHand(c, timestamp interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHand", reflect.TypeOf((*MockHandRepository)(nil).CreateHand), c, timestamp)
+}
+
+// GetHandByID mocks base method.
+func (m *MockHandRepository) GetHandByID(c context.Context, id uint64) (*domain.Hand, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHandByID", c, id)
+	ret0, _ := ret[0].(*domain.Hand)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHandByID indicates an expected call of GetHandByID.
+func (mr *MockHandRepositoryMockRecorder) GetHandByID(c, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHandByID", reflect.TypeOf((*MockHandRepository)(nil).GetHandByID), c, id)
 }
 
 // GetHands mocks base method.

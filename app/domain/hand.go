@@ -15,6 +15,11 @@ func GetHands(c context.Context) ([]*Hand, error) {
 	return repos.handRepo.GetHands(c)
 }
 
+// GetHandByID get a hand whose ID is handID.
+func GetHandByID(c context.Context, handID uint64) (*Hand, error) {
+	return repos.handRepo.GetHandByID(c, handID)
+}
+
 // Hand is the hand model.
 type Hand struct {
 	id        uint64

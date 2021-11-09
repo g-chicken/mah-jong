@@ -69,6 +69,27 @@ func (uc *handUC) CreateHand(
 	return hand, playerIDs, nil
 }
 
+func (uc *handUC) FetchHandScore(
+	c context.Context, handID uint64,
+) (*domain.Hand, []uint64, domain.HalfRoundGameScores, error) {
+	hand, err := domain.GetHandByID(c, handID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	playerIDs, err := domain.ParticipatePlayersInHand(c, handID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	halfRoundGameScores, err := domain.GetHalfRoundGameScoresByHandID(c, handID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return hand, playerIDs, halfRoundGameScores, nil
+}
+
 func (uc *handUC) FetchHands(
 	c context.Context,
 ) ([]*domain.Hand, map[uint64][]uint64 /* [hand ID] = {plyer IDs} */, error) {

@@ -59,7 +59,38 @@ func (h *handGRPCHandler) FetchHandScore(
 	c context.Context,
 	req *hand.FetchHandScoreRequest,
 ) (*hand.FetchHandScoreResponse, error) {
-	return &hand.FetchHandScoreResponse{}, nil
+	domainHand, playerIDs, scores, err := h.handUC.FetchHandScore(c, req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	halfGameScores := map[uint32]*hand.HandScore_HalfGameScore{}
+
+	for gameNumber, playerScores := range scores {
+		playerScoresPB := make([]*hand.HandScore_HalfGameScore_PlayerScore, 0, len(playerScores))
+
+		for _, playerScore := range playerScores {
+			playerScoresPB = append(
+				playerScoresPB,
+				&hand.HandScore_HalfGameScore_PlayerScore{
+					PlayerId: playerScore.GetPlayerID(),
+					Score:    int32(playerScore.GetScore()),
+					Ranking:  playerScore.GetRanking(),
+				},
+			)
+		}
+
+		halfGameScores[gameNumber] = &hand.HandScore_HalfGameScore{PlayerScores: playerScoresPB}
+	}
+
+	return &hand.FetchHandScoreResponse{
+		HandScore: &hand.HandScore{
+			Id:                   domainHand.GetID(),
+			ParticipatePlayerIds: playerIDs,
+			Timestamp:            timestamppb.New(domainHand.GetTimestamp()),
+			HalfGameScores:       halfGameScores,
+		},
+	}, nil
 }
 
 func (h *handGRPCHandler) FetchHands(

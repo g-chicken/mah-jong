@@ -19,6 +19,10 @@ var (
 		hand.FetchHandScoreResponse{},
 		hand.FetchHandsResponse{},
 		hand.Hand{},
+		hand.FetchHandScoreResponse{},
+		hand.HandScore{},
+		hand.HandScore_HalfGameScore{},
+		hand.HandScore_HalfGameScore_PlayerScore{},
 		timestamppb.Timestamp{},
 	)
 	noErrFunc = func(err error) bool { return err != nil }

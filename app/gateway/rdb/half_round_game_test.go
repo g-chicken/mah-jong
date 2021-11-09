@@ -249,3 +249,101 @@ func testHalfRoundGameRepositoryCreateHalfRoundGamesTransaction(
 		t.Fatalf("should not be error but %v", err)
 	}
 }
+
+func TestHalfRoundGameRepository_GetHalfRoundGameScoresByHandID(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name    string
+		handID  uint64
+		want    domain.HalfRoundGameScores
+		errFunc func(error) bool
+	}{
+		{
+			name:   "success",
+			handID: 1,
+			want: domain.HalfRoundGameScores{
+				1: []*domain.PlayerScore{
+					domain.NewPlayerScore(1, 10, 2),
+					domain.NewPlayerScore(2, -20, 3),
+					domain.NewPlayerScore(3, -30, 4),
+					domain.NewPlayerScore(4, 40, 1),
+				},
+				2: []*domain.PlayerScore{
+					domain.NewPlayerScore(1, 14, 2),
+					domain.NewPlayerScore(2, -61, 4),
+					domain.NewPlayerScore(3, 73, 1),
+					domain.NewPlayerScore(4, -26, 3),
+				},
+			},
+			errFunc: notErrFunc,
+		},
+		{
+			name:   "three players",
+			handID: 2,
+			want: domain.HalfRoundGameScores{
+				1: []*domain.PlayerScore{
+					domain.NewPlayerScore(1, 0, 2),
+					domain.NewPlayerScore(2, -31, 3),
+					domain.NewPlayerScore(4, 31, 1),
+				},
+				2: []*domain.PlayerScore{
+					domain.NewPlayerScore(1, 25, 1),
+					domain.NewPlayerScore(2, -4, 2),
+					domain.NewPlayerScore(4, -21, 3),
+				},
+				3: []*domain.PlayerScore{
+					domain.NewPlayerScore(1, 43, 1),
+					domain.NewPlayerScore(2, -55, 3),
+					domain.NewPlayerScore(4, 12, 2),
+				},
+			},
+			errFunc: notErrFunc,
+		},
+		{
+			name:    "no hand ID",
+			handID:  99,
+			errFunc: func(err error) bool { return !errors.As(err, &domain.NotFoundError{}) },
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			repo := rdb.NewHalfRoundGameRepository(rdbDetectorRepo)
+			got, err := repo.GetHalfRoundGameScoresByHandID(context.Background(), tc.handID)
+
+			if tc.errFunc(err) {
+				t.Fatalf("unexpected error (error = %v)", err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, allowUnexported, uint64KeySort, playerScoreSliceSort); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		})
+
+		t.Run(tc.name+"(transaction)", func(t *testing.T) {
+			t.Parallel()
+
+			if err := rdbStatementSetRepo.Transaction(context.Background(), func(c context.Context) error {
+				repo := rdb.NewHalfRoundGameRepository(rdbDetectorRepo)
+				got, err := repo.GetHalfRoundGameScoresByHandID(context.Background(), tc.handID)
+
+				if tc.errFunc(err) {
+					return fmt.Errorf("unexpected error (error = %w)", err)
+				}
+
+				if diff := cmp.Diff(tc.want, got, allowUnexported, uint64KeySort, playerScoreSliceSort); diff != "" {
+					return fmt.Errorf("unexpected result (-want +got):\n%s", diff)
+				}
+
+				return nil
+			}); err != nil {
+				t.Fatalf("unexpected error (error = %v)", err)
+			}
+		})
+	}
+}
