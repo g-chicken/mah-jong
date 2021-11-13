@@ -119,7 +119,7 @@ func TestHandServiceServer_FetchHandScore(t *testing.T) {
 	}{
 		{
 			name: "success",
-			req:  &hand.FetchHandScoreRequest{Id: 100},
+			req:  &hand.FetchHandScoreRequest{HandId: 100},
 			setMock: func(m *mock_usecase.MockHandUsecase) {
 				m.EXPECT().FetchHandScore(context.Background(), uint64(100)).Return(
 					domain.NewHand(100, time.Date(2021, time.November, 9, 0, 0, 0, 0, time.UTC)),
@@ -166,7 +166,7 @@ func TestHandServiceServer_FetchHandScore(t *testing.T) {
 		},
 		{
 			name: "empty scores",
-			req:  &hand.FetchHandScoreRequest{Id: 100},
+			req:  &hand.FetchHandScoreRequest{HandId: 100},
 			setMock: func(m *mock_usecase.MockHandUsecase) {
 				m.EXPECT().FetchHandScore(context.Background(), uint64(100)).Return(
 					domain.NewHand(100, time.Date(2021, time.November, 9, 0, 0, 0, 0, time.UTC)),
@@ -187,7 +187,7 @@ func TestHandServiceServer_FetchHandScore(t *testing.T) {
 		},
 		{
 			name: "error",
-			req:  &hand.FetchHandScoreRequest{Id: 100},
+			req:  &hand.FetchHandScoreRequest{HandId: 100},
 			setMock: func(m *mock_usecase.MockHandUsecase) {
 				m.EXPECT().FetchHandScore(context.Background(), uint64(100)).Return(nil, nil, nil, errors.New("error"))
 			},

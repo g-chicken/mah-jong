@@ -152,3 +152,111 @@ func TestPlayerServiceServer_FetchPlayers(t *testing.T) {
 		})
 	}
 }
+
+func TestPlayerServiceServer_UpdatePlayer(t *testing.T) {
+	testCases := []struct {
+		name    string
+		req     *player.UpdatePlayerRequest
+		setMock func(*mock_usecase.MockPlayerUsecase)
+		want    *player.UpdatePlayerResponse
+		errFunc func(err error) bool
+	}{
+		{
+			name: "success",
+			req:  &player.UpdatePlayerRequest{PlayerId: 10, Name: "test"},
+			setMock: func(m *mock_usecase.MockPlayerUsecase) {
+				m.EXPECT().UpdatePlayer(context.Background(), uint64(10), "test").Return(domain.NewPlayer(10, "test"), nil)
+			},
+			want:    &player.UpdatePlayerResponse{Player: &player.Player{Id: 10, Name: "test"}},
+			errFunc: noErrFunc,
+		},
+		{
+			name:    "empty name",
+			req:     &player.UpdatePlayerRequest{PlayerId: 10},
+			setMock: func(m *mock_usecase.MockPlayerUsecase) {},
+			errFunc: func(err error) bool { return !errors.As(err, &domain.InvalidArgumentError{}) },
+		},
+		{
+			name: "error",
+			req:  &player.UpdatePlayerRequest{PlayerId: 10, Name: "test"},
+			setMock: func(m *mock_usecase.MockPlayerUsecase) {
+				m.EXPECT().UpdatePlayer(context.Background(), uint64(10), "test").Return(nil, errors.New("error"))
+			},
+			errFunc: errFunc,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			m := mock_usecase.NewMockPlayerUsecase(ctrl)
+			tc.setMock(m)
+			service := handler.NewPlayerServiceServer(m)
+
+			got, err := service.UpdatePlayer(context.Background(), tc.req)
+
+			if tc.errFunc(err) {
+				t.Fatalf("unexpected error (err : %v)", err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, ignoreUnexported); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestPlayerServiceServer_DeletPlayer(t *testing.T) {
+	testCases := []struct {
+		name    string
+		req     *player.DeletePlayerRequest
+		setMock func(*mock_usecase.MockPlayerUsecase)
+		want    *player.DeletePlayerResponse
+		errFunc func(err error) bool
+	}{
+		{
+			name: "success",
+			req:  &player.DeletePlayerRequest{PlayerId: 10},
+			setMock: func(m *mock_usecase.MockPlayerUsecase) {
+				m.EXPECT().DeletePlayer(context.Background(), uint64(10)).Return(nil)
+			},
+			want:    &player.DeletePlayerResponse{},
+			errFunc: noErrFunc,
+		},
+		{
+			name: "error",
+			req:  &player.DeletePlayerRequest{PlayerId: 10},
+			setMock: func(m *mock_usecase.MockPlayerUsecase) {
+				m.EXPECT().DeletePlayer(context.Background(), uint64(10)).Return(errors.New("error"))
+			},
+			errFunc: errFunc,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			m := mock_usecase.NewMockPlayerUsecase(ctrl)
+			tc.setMock(m)
+			service := handler.NewPlayerServiceServer(m)
+
+			got, err := service.DeletePlayer(context.Background(), tc.req)
+
+			if tc.errFunc(err) {
+				t.Fatalf("unexpected error (err : %v)", err)
+			}
+
+			if diff := cmp.Diff(tc.want, got, ignoreUnexported); diff != "" {
+				t.Fatalf("unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}

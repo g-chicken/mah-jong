@@ -18,6 +18,8 @@ type PlayerRepository interface {
 	GetPlayerByID(c context.Context, id uint64) (*Player, error)
 	GetPlayerByName(c context.Context, name string) (*Player, error)
 	GetPlayers(c context.Context) ([]*Player, error)
+	UpdatePlayer(c context.Context, id uint64, name string) error
+	DeletePlayer(c context.Context, id uint64) error
 }
 
 // HalfRoundGameRepository defines to operate the half_round_games table.

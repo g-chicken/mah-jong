@@ -17,6 +17,8 @@ type ConfigUsecase interface {
 type PlayerUsecase interface {
 	CreatePlayer(c context.Context, name string) (*domain.Player, error)
 	FetchPlayers(c context.Context) ([]*domain.Player, error)
+	UpdatePlayer(c context.Context, id uint64, name string) (*domain.Player, error)
+	DeletePlayer(c context.Context, id uint64) error
 }
 
 // CreateHandArguments is a argument of CreateHand method.

@@ -44,6 +44,13 @@ service HandService {
   // FetchHandScore fetches a hand by hand's ID.
   // If hand's ID is not in DB, return not found error.
   rpc FetchHandScore(FetchHandScoreRequest) returns (FetchHandScoreResponse);
+  // UpdateHand updates a hand.
+  // If there is no hand ID in DB, return a not found error.
+  rpc UpdateHand(UpdateHandRequest) returns (UpdateHandResponse);
+  // UpdateHandScores updates scores of a hand.
+  // If there is no hand ID in DB, return a not found error.
+  // If scores are invalid, return a invalid argument error.
+  rpc UpdateHandScores(UpdateHandScoresRequest) returns (UpdateHandScoresResponse);
 }
 
 message CreateHandRequest {
@@ -69,9 +76,32 @@ message FetchHandsResponse {
 }
 
 message FetchHandScoreRequest {
-  uint64 id = 1;
+  uint64 hand_id = 1;
 }
 
 message FetchHandScoreResponse {
+  HandScore hand_score = 1;
+}
+
+message UpdateHandRequest {
+  uint64 hand_id = 1;
+}
+
+message UpdateHandResponse {
+  Hand hand = 1;
+}
+
+message UpdateHandScoresRequest {
+  uint64 hand_id = 1;
+  repeated PlayerScore player_scores = 2;
+
+  message PlayerScore {
+    uint64 player_id = 1;
+    int32 score = 2;
+    uint32 game_number = 3;
+  }
+}
+
+message UpdateHandScoresResponse {
   HandScore hand_score = 1;
 }

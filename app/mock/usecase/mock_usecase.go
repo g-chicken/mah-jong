@@ -89,6 +89,20 @@ func (mr *MockPlayerUsecaseMockRecorder) CreatePlayer(c, name interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayer", reflect.TypeOf((*MockPlayerUsecase)(nil).CreatePlayer), c, name)
 }
 
+// DeletePlayer mocks base method.
+func (m *MockPlayerUsecase) DeletePlayer(c context.Context, id uint64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePlayer", c, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePlayer indicates an expected call of DeletePlayer.
+func (mr *MockPlayerUsecaseMockRecorder) DeletePlayer(c, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePlayer", reflect.TypeOf((*MockPlayerUsecase)(nil).DeletePlayer), c, id)
+}
+
 // FetchPlayers mocks base method.
 func (m *MockPlayerUsecase) FetchPlayers(c context.Context) ([]*domain.Player, error) {
 	m.ctrl.T.Helper()
@@ -102,6 +116,21 @@ func (m *MockPlayerUsecase) FetchPlayers(c context.Context) ([]*domain.Player, e
 func (mr *MockPlayerUsecaseMockRecorder) FetchPlayers(c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchPlayers", reflect.TypeOf((*MockPlayerUsecase)(nil).FetchPlayers), c)
+}
+
+// UpdatePlayer mocks base method.
+func (m *MockPlayerUsecase) UpdatePlayer(c context.Context, id uint64, name string) (*domain.Player, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePlayer", c, id, name)
+	ret0, _ := ret[0].(*domain.Player)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdatePlayer indicates an expected call of UpdatePlayer.
+func (mr *MockPlayerUsecaseMockRecorder) UpdatePlayer(c, id, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePlayer", reflect.TypeOf((*MockPlayerUsecase)(nil).UpdatePlayer), c, id, name)
 }
 
 // MockHandUsecase is a mock of HandUsecase interface.

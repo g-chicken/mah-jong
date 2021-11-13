@@ -21,9 +21,16 @@ type PlayerServiceClient interface {
 	// CreatePlayer creates a player.
 	// If the name have already exist in DB, return the player.
 	CreatePlayer(ctx context.Context, in *CreatePlayerRequest, opts ...grpc.CallOption) (*CreatePlayerResponse, error)
-	// FetchPlayers search for players.
+	// FetchPlayers searches for players.
 	// If it is no player in DB, return empty list.
 	FetchPlayers(ctx context.Context, in *FetchPlayersRequest, opts ...grpc.CallOption) (*FetchPlayersResponse, error)
+	// UpdatePlayer updates players' data.
+	// If player ID is not exist in DB, return not found error.
+	// If name is empty, return a invalid error.
+	UpdatePlayer(ctx context.Context, in *UpdatePlayerRequest, opts ...grpc.CallOption) (*UpdatePlayerResponse, error)
+	// DeletePlayer deletes a player.
+	// If there is no ID, does not return an error.
+	DeletePlayer(ctx context.Context, in *DeletePlayerRequest, opts ...grpc.CallOption) (*DeletePlayerResponse, error)
 }
 
 type playerServiceClient struct {
@@ -52,6 +59,24 @@ func (c *playerServiceClient) FetchPlayers(ctx context.Context, in *FetchPlayers
 	return out, nil
 }
 
+func (c *playerServiceClient) UpdatePlayer(ctx context.Context, in *UpdatePlayerRequest, opts ...grpc.CallOption) (*UpdatePlayerResponse, error) {
+	out := new(UpdatePlayerResponse)
+	err := c.cc.Invoke(ctx, "/app.services.player.v1.PlayerService/UpdatePlayer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *playerServiceClient) DeletePlayer(ctx context.Context, in *DeletePlayerRequest, opts ...grpc.CallOption) (*DeletePlayerResponse, error) {
+	out := new(DeletePlayerResponse)
+	err := c.cc.Invoke(ctx, "/app.services.player.v1.PlayerService/DeletePlayer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PlayerServiceServer is the server API for PlayerService service.
 // All implementations should embed UnimplementedPlayerServiceServer
 // for forward compatibility
@@ -59,9 +84,16 @@ type PlayerServiceServer interface {
 	// CreatePlayer creates a player.
 	// If the name have already exist in DB, return the player.
 	CreatePlayer(context.Context, *CreatePlayerRequest) (*CreatePlayerResponse, error)
-	// FetchPlayers search for players.
+	// FetchPlayers searches for players.
 	// If it is no player in DB, return empty list.
 	FetchPlayers(context.Context, *FetchPlayersRequest) (*FetchPlayersResponse, error)
+	// UpdatePlayer updates players' data.
+	// If player ID is not exist in DB, return not found error.
+	// If name is empty, return a invalid error.
+	UpdatePlayer(context.Context, *UpdatePlayerRequest) (*UpdatePlayerResponse, error)
+	// DeletePlayer deletes a player.
+	// If there is no ID, does not return an error.
+	DeletePlayer(context.Context, *DeletePlayerRequest) (*DeletePlayerResponse, error)
 }
 
 // UnimplementedPlayerServiceServer should be embedded to have forward compatible implementations.
@@ -73,6 +105,12 @@ func (UnimplementedPlayerServiceServer) CreatePlayer(context.Context, *CreatePla
 }
 func (UnimplementedPlayerServiceServer) FetchPlayers(context.Context, *FetchPlayersRequest) (*FetchPlayersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchPlayers not implemented")
+}
+func (UnimplementedPlayerServiceServer) UpdatePlayer(context.Context, *UpdatePlayerRequest) (*UpdatePlayerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePlayer not implemented")
+}
+func (UnimplementedPlayerServiceServer) DeletePlayer(context.Context, *DeletePlayerRequest) (*DeletePlayerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePlayer not implemented")
 }
 
 // UnsafePlayerServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -122,6 +160,42 @@ func _PlayerService_FetchPlayers_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PlayerService_UpdatePlayer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePlayerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlayerServiceServer).UpdatePlayer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/app.services.player.v1.PlayerService/UpdatePlayer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlayerServiceServer).UpdatePlayer(ctx, req.(*UpdatePlayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PlayerService_DeletePlayer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePlayerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlayerServiceServer).DeletePlayer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/app.services.player.v1.PlayerService/DeletePlayer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlayerServiceServer).DeletePlayer(ctx, req.(*DeletePlayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PlayerService_ServiceDesc is the grpc.ServiceDesc for PlayerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -136,6 +210,14 @@ var PlayerService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchPlayers",
 			Handler:    _PlayerService_FetchPlayers_Handler,
+		},
+		{
+			MethodName: "UpdatePlayer",
+			Handler:    _PlayerService_UpdatePlayer_Handler,
+		},
+		{
+			MethodName: "DeletePlayer",
+			Handler:    _PlayerService_DeletePlayer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

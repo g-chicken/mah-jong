@@ -14,6 +14,8 @@ var (
 	ignoreUnexported = cmpopts.IgnoreUnexported(
 		player.CreatePlayerResponse{},
 		player.FetchPlayersResponse{},
+		player.UpdatePlayerResponse{},
+		player.DeletePlayerResponse{},
 		player.Player{},
 		hand.CreateHandResponse{},
 		hand.FetchHandScoreResponse{},

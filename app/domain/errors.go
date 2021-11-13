@@ -1,6 +1,11 @@
 package domain
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var errNilPlayer = errors.New("player is nil")
 
 type InvalidArgumentError struct {
 	msg string

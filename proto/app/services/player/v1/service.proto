@@ -13,9 +13,16 @@ service PlayerService {
   // CreatePlayer creates a player.
   // If the name have already exist in DB, return the player.
   rpc CreatePlayer(CreatePlayerRequest) returns (CreatePlayerResponse);
-  // FetchPlayers search for players.
+  // FetchPlayers searches for players.
   // If it is no player in DB, return empty list.
   rpc FetchPlayers(FetchPlayersRequest) returns (FetchPlayersResponse);
+  // UpdatePlayer updates players' data.
+  // If player ID is not exist in DB, return not found error.
+  // If name is empty, return a invalid error.
+  rpc UpdatePlayer(UpdatePlayerRequest) returns (UpdatePlayerResponse);
+  // DeletePlayer deletes a player.
+  // If there is no ID, does not return an error.
+  rpc DeletePlayer(DeletePlayerRequest) returns (DeletePlayerResponse);
 }
 
 message CreatePlayerRequest {
@@ -33,3 +40,18 @@ message FetchPlayersRequest {
 message FetchPlayersResponse {
   repeated Player players = 1;
 }
+
+message UpdatePlayerRequest {
+  uint64 player_id = 1;
+  string name = 2;
+}
+
+message UpdatePlayerResponse {
+  Player player = 1;
+}
+
+message DeletePlayerRequest {
+  uint64 player_id = 1;
+}
+
+message DeletePlayerResponse {}

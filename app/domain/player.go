@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 // GetPlayerByID gets a Player by the player ID.
 func GetPlayerByID(c context.Context, playerID uint64) (*Player, error) {
@@ -52,4 +54,41 @@ func (p *Player) GetName() string {
 	}
 
 	return p.name
+}
+
+// SetName set the player's name.
+func (p *Player) SetName(name string) {
+	if p == nil {
+		return
+	}
+
+	p.name = name
+}
+
+// UpdateName updates the player's name.
+func (p *Player) UpdateName(c context.Context, name string) error {
+	if p == nil {
+		return errNilPlayer
+	}
+
+	if p.GetName() == name {
+		return nil
+	}
+
+	if err := repos.playerRepo.UpdatePlayer(c, p.GetID(), name); err != nil {
+		return err
+	}
+
+	p.SetName(name)
+
+	return nil
+}
+
+// Delete delete the player.
+func (p *Player) Delete(c context.Context) error {
+	if p == nil {
+		return errNilPlayer
+	}
+
+	return repos.playerRepo.DeletePlayer(c, p.GetID())
 }

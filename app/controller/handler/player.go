@@ -61,3 +61,36 @@ func (h *playerGRPCHandler) FetchPlayers(
 
 	return &player.FetchPlayersResponse{Players: players}, nil
 }
+
+func (h *playerGRPCHandler) UpdatePlayer(
+	c context.Context,
+	req *player.UpdatePlayerRequest,
+) (*player.UpdatePlayerResponse, error) {
+	name := req.GetName()
+	if name == "" {
+		return nil, domain.NewInvalidArgumentError("no name")
+	}
+
+	result, err := h.playerUC.UpdatePlayer(c, req.GetPlayerId(), name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &player.UpdatePlayerResponse{
+		Player: &player.Player{
+			Id:   result.GetID(),
+			Name: result.GetName(),
+		},
+	}, nil
+}
+
+func (h *playerGRPCHandler) DeletePlayer(
+	c context.Context,
+	req *player.DeletePlayerRequest,
+) (*player.DeletePlayerResponse, error) {
+	if err := h.playerUC.DeletePlayer(c, req.GetPlayerId()); err != nil {
+		return nil, err
+	}
+
+	return &player.DeletePlayerResponse{}, nil
+}

@@ -21,7 +21,7 @@ func TestPlayerRepository_CreatePlayer_normal(t *testing.T) {
 		{
 			testName: "success",
 			argName:  "testhoge",
-			want:     domain.NewPlayer(6, "testhoge"),
+			want:     domain.NewPlayer(7, "testhoge"),
 			errFunc:  notErrFunc,
 		},
 	}
@@ -74,7 +74,7 @@ func TestPlayerRepository_CreatePlayer_transaction(t *testing.T) {
 		{
 			testName: "success",
 			argName:  "testhoge",
-			want:     domain.NewPlayer(7, "testhoge"),
+			want:     domain.NewPlayer(8, "testhoge"),
 			errFunc:  notErrFunc,
 		},
 	}
@@ -319,8 +319,6 @@ func TestPlayerRepository_GetPlayerByName(t *testing.T) { // nolint:dupl
 }
 
 func TestPlayerRepository_GetPlayers(t *testing.T) {
-	t.Parallel()
-
 	testCases := []struct {
 		name    string
 		want    []*domain.Player
@@ -334,6 +332,7 @@ func TestPlayerRepository_GetPlayers(t *testing.T) {
 				domain.NewPlayer(3, "foo"),
 				domain.NewPlayer(4, "bar"),
 				domain.NewPlayer(5, "fuga"),
+				domain.NewPlayer(6, "foobar"),
 			},
 			errFunc: notErrFunc,
 		},
@@ -343,8 +342,6 @@ func TestPlayerRepository_GetPlayers(t *testing.T) {
 		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
-
 			repo := rdb.NewPlayerRepository(rdbDetectorRepo)
 			got, err := repo.GetPlayers(context.Background())
 
@@ -358,8 +355,6 @@ func TestPlayerRepository_GetPlayers(t *testing.T) {
 		})
 
 		t.Run(tc.name+"(transaction)", func(t *testing.T) {
-			t.Parallel()
-
 			c := context.Background()
 
 			if err := rdbStatementSetRepo.Transaction(c, func(c context.Context) error {
@@ -380,4 +375,181 @@ func TestPlayerRepository_GetPlayers(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPlayerRepository_UpdatePlayer(t *testing.T) {
+	testCases := []struct {
+		testName string
+		id       uint64
+		name     string
+		errFunc  func(error) bool
+	}{
+		{
+			testName: "success",
+			id:       4,
+			name:     "testtest",
+			errFunc:  notErrFunc,
+		},
+		{
+			testName: "conflict",
+			id:       4,
+			name:     "test",
+			errFunc:  func(err error) bool { return !errors.As(err, &domain.ConflictError{}) },
+		},
+		{
+			testName: "not found",
+			id:       99,
+			name:     "testhoge",
+			errFunc:  notErrFunc,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		t.Run(tc.testName, func(t *testing.T) {
+			defer func() {
+				removeAllPlayers()
+				setPlayers()
+			}()
+
+			repo := rdb.NewPlayerRepository(rdbDetectorRepo)
+
+			if err := repo.UpdatePlayer(context.Background(), tc.id, tc.name); tc.errFunc(err) {
+				t.Fatalf("unexpected error (error = %v)", err)
+			}
+		})
+
+		t.Run(tc.testName+"(transaction)", func(t *testing.T) {
+			defer func() {
+				removeAllPlayers()
+				setPlayers()
+			}()
+
+			repo := rdb.NewPlayerRepository(rdbDetectorRepo)
+
+			if err := rdbStatementSetRepo.Transaction(context.Background(), func(c context.Context) error {
+				if err := repo.UpdatePlayer(c, tc.id, tc.name); tc.errFunc(err) {
+					return fmt.Errorf("unexpected error (err = %w)", err)
+				}
+
+				return nil
+			}); err != nil {
+				t.Fatalf("should not be error but %v", err)
+			}
+		})
+	}
+}
+
+func TestPlayerRepository_DeletePlayer(t *testing.T) {
+	testCases := []struct {
+		name    string
+		id      uint64
+		deleted bool
+		errFunc func(error) bool
+	}{
+		{
+			name:    "success",
+			id:      6,
+			deleted: true,
+			errFunc: notErrFunc,
+		},
+		{
+			name:    "foreign key constraint",
+			id:      4,
+			errFunc: func(err error) bool { return !errors.As(err, &domain.IllegalForeignKeyConstraintError{}) },
+		},
+		{
+			name:    "not found",
+			id:      99,
+			deleted: true,
+			errFunc: notErrFunc,
+		},
+	}
+	confirmDelete := func(c context.Context, id uint64, deleted bool) error {
+		repo := rdb.NewPlayerRepository(rdbDetectorRepo)
+
+		_, err := repo.GetPlayerByID(c, id)
+
+		if deleted && !errors.As(err, &domain.NotFoundError{}) {
+			return fmt.Errorf("done not delete the player (err = %w)", err)
+		}
+
+		if !deleted && errors.As(err, &domain.NotFoundError{}) {
+			return fmt.Errorf("deleted the player (err = %w)", err)
+		}
+
+		return nil
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		testPlayerRepositoryDeltePlayerNormal(t, tc.name, tc.id, tc.deleted, confirmDelete, tc.errFunc)
+		testPlayerRepositoryDeltePlayerTransaction(t, tc.name, tc.id, tc.deleted, confirmDelete, tc.errFunc)
+	}
+}
+
+func testPlayerRepositoryDeltePlayerNormal(
+	t *testing.T,
+	name string,
+	id uint64,
+	deleted bool,
+	confirmDelete func(context.Context, uint64, bool) error,
+	errFunc func(error) bool,
+) {
+	t.Helper()
+
+	t.Run(name, func(t *testing.T) {
+		defer func() {
+			removeAllPlayers()
+			setPlayers()
+		}()
+
+		repo := rdb.NewPlayerRepository(rdbDetectorRepo)
+		c := context.Background()
+
+		if err := repo.DeletePlayer(c, id); errFunc(err) {
+			t.Fatalf("unexpected error (error = %v)", err)
+		}
+
+		if err := confirmDelete(c, id, deleted); err != nil {
+			t.Fatalf("unexpected error (error = %v)", err)
+		}
+	})
+}
+
+func testPlayerRepositoryDeltePlayerTransaction(
+	t *testing.T,
+	name string,
+	id uint64,
+	deleted bool,
+	confirmDelete func(context.Context, uint64, bool) error,
+	errFunc func(error) bool,
+) {
+	t.Helper()
+
+	t.Run(name, func(t *testing.T) {
+		defer func() {
+			removeAllPlayers()
+			setPlayers()
+		}()
+
+		repo := rdb.NewPlayerRepository(rdbDetectorRepo)
+		c := context.Background()
+
+		if err := rdbStatementSetRepo.Transaction(c, func(c context.Context) error {
+			if err := repo.DeletePlayer(c, id); errFunc(err) {
+				return fmt.Errorf("unexpected error (err = %w)", err)
+			}
+
+			return nil
+		}); err != nil {
+			t.Fatalf("should not be error but %v", err)
+		}
+
+		if err := confirmDelete(c, id, deleted); err != nil {
+			t.Fatalf("unexpected error (error = %v)", err)
+		}
+	})
 }

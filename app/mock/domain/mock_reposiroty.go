@@ -52,6 +52,20 @@ func (mr *MockPlayerRepositoryMockRecorder) CreatePlayer(c, name interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePlayer", reflect.TypeOf((*MockPlayerRepository)(nil).CreatePlayer), c, name)
 }
 
+// DeletePlayer mocks base method.
+func (m *MockPlayerRepository) DeletePlayer(c context.Context, id uint64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeletePlayer", c, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeletePlayer indicates an expected call of DeletePlayer.
+func (mr *MockPlayerRepositoryMockRecorder) DeletePlayer(c, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeletePlayer", reflect.TypeOf((*MockPlayerRepository)(nil).DeletePlayer), c, id)
+}
+
 // GetPlayerByID mocks base method.
 func (m *MockPlayerRepository) GetPlayerByID(c context.Context, id uint64) (*domain.Player, error) {
 	m.ctrl.T.Helper()
@@ -95,6 +109,20 @@ func (m *MockPlayerRepository) GetPlayers(c context.Context) ([]*domain.Player, 
 func (mr *MockPlayerRepositoryMockRecorder) GetPlayers(c interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlayers", reflect.TypeOf((*MockPlayerRepository)(nil).GetPlayers), c)
+}
+
+// UpdatePlayer mocks base method.
+func (m *MockPlayerRepository) UpdatePlayer(c context.Context, id uint64, name string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdatePlayer", c, id, name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdatePlayer indicates an expected call of UpdatePlayer.
+func (mr *MockPlayerRepositoryMockRecorder) UpdatePlayer(c, id, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePlayer", reflect.TypeOf((*MockPlayerRepository)(nil).UpdatePlayer), c, id, name)
 }
 
 // MockHalfRoundGameRepository is a mock of HalfRoundGameRepository interface.

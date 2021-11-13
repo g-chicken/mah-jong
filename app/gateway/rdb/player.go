@@ -97,3 +97,35 @@ func (r *playerRepository) GetPlayers(c context.Context) ([]*domain.Player, erro
 
 	return players, nil
 }
+
+func (r *playerRepository) UpdatePlayer(c context.Context, id uint64, name string) error {
+	ope := r.repo.GetRDBOperator(c)
+	query := "UPDATE players SET name = ? WHERE id = ?"
+	args := []interface{}{name, id}
+
+	result, err := ope.Exec(c, query, args...)
+	if err != nil {
+		return err
+	}
+
+	// AffectedRows() is 0 if it puts up a transaction and update the player immediately after the same player updating.
+	// so, does not return a not found error.
+
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *playerRepository) DeletePlayer(c context.Context, id uint64) error {
+	ope := r.repo.GetRDBOperator(c)
+	query := "DELETE FROM players WHERE id = ?"
+	args := []interface{}{id}
+
+	if _, err := ope.Exec(c, query, args...); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -431,7 +431,7 @@ func detectMysqlError(err error) error {
 	case mysqlerr.ER_DUP_ENTRY:
 		return domain.NewConflictError(err.Error())
 	// illegal foreign key constraint
-	case mysqlerr.ER_NO_REFERENCED_ROW_2:
+	case mysqlerr.ER_ROW_IS_REFERENCED_2, mysqlerr.ER_NO_REFERENCED_ROW_2:
 		return domain.NewIllegalForeignKeyConstraintError(err.Error())
 	default:
 		return err

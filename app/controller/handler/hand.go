@@ -59,7 +59,7 @@ func (h *handGRPCHandler) FetchHandScore(
 	c context.Context,
 	req *hand.FetchHandScoreRequest,
 ) (*hand.FetchHandScoreResponse, error) {
-	domainHand, playerIDs, scores, err := h.handUC.FetchHandScore(c, req.GetId())
+	domainHand, playerIDs, scores, err := h.handUC.FetchHandScore(c, req.GetHandId())
 	if err != nil {
 		return nil, err
 	}
@@ -115,4 +115,18 @@ func (h *handGRPCHandler) FetchHands(
 	}
 
 	return &hand.FetchHandsResponse{Hands: handPBs}, nil
+}
+
+func (h *handGRPCHandler) UpdateHand(
+	c context.Context,
+	req *hand.UpdateHandRequest,
+) (*hand.UpdateHandResponse, error) {
+	return &hand.UpdateHandResponse{}, nil
+}
+
+func (h *handGRPCHandler) UpdateHandScores(
+	c context.Context,
+	req *hand.UpdateHandScoresRequest,
+) (*hand.UpdateHandScoresResponse, error) {
+	return &hand.UpdateHandScoresResponse{}, nil
 }

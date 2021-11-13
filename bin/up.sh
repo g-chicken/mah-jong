@@ -54,6 +54,15 @@ fi
 echo
 echo "ok"
 
+## insert data
+echo
+echo "insert data"
+
+docker-compose exec -T db mysql -u root -phoge < ./rdb/data.sql
+
+echo
+echo "ok"
+
 ## up app
 #echo
 #echo "up app"

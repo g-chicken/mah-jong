@@ -67,6 +67,10 @@ var (
 			id:   5,
 			name: "fuga",
 		},
+		{
+			id:   6,
+			name: "foobar",
+		},
 	}
 	handDTO = []struct {
 		id       uint64
