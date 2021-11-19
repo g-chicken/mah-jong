@@ -1,5 +1,7 @@
 package domain
 
+import "context"
+
 // PlayerScore is a score in a game.
 type PlayerScore struct {
 	playerID uint64
@@ -41,4 +43,37 @@ func (p *PlayerScore) GetRanking() uint32 {
 	}
 
 	return p.ranking
+}
+
+func (p *PlayerScore) setScore(score int) {
+	if p == nil {
+		return
+	}
+
+	p.score = score
+}
+
+func (p *PlayerScore) setRanking(ranking uint32) {
+	if p == nil {
+		return
+	}
+
+	p.ranking = ranking
+}
+
+func (p *PlayerScore) updateScoreAndRankingByHandIDAndGameNumber(
+	c context.Context, handID uint64, score int, ranking, gameNumber uint32,
+) error {
+	if p == nil {
+		return errNilPlayerScore
+	}
+
+	if err := repos.halfRoundGameRepo.UpdateScoreAndRanking(c, handID, p.GetPlayerID(), score, ranking, gameNumber); err != nil {
+		return err
+	}
+
+	p.setScore(score)
+	p.setRanking(ranking)
+
+	return nil
 }

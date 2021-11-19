@@ -27,9 +27,6 @@ type HandServiceClient interface {
 	// FetchHandScore fetches a hand by hand's ID.
 	// If hand's ID is not in DB, return not found error.
 	FetchHandScore(ctx context.Context, in *FetchHandScoreRequest, opts ...grpc.CallOption) (*FetchHandScoreResponse, error)
-	// UpdateHand updates a hand.
-	// If there is no hand ID in DB, return a not found error.
-	UpdateHand(ctx context.Context, in *UpdateHandRequest, opts ...grpc.CallOption) (*UpdateHandResponse, error)
 	// UpdateHandScores updates scores of a hand.
 	// If there is no hand ID in DB, return a not found error.
 	// If scores are invalid, return a invalid argument error.
@@ -71,15 +68,6 @@ func (c *handServiceClient) FetchHandScore(ctx context.Context, in *FetchHandSco
 	return out, nil
 }
 
-func (c *handServiceClient) UpdateHand(ctx context.Context, in *UpdateHandRequest, opts ...grpc.CallOption) (*UpdateHandResponse, error) {
-	out := new(UpdateHandResponse)
-	err := c.cc.Invoke(ctx, "/app.services.hand.v1.HandService/UpdateHand", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *handServiceClient) UpdateHandScores(ctx context.Context, in *UpdateHandScoresRequest, opts ...grpc.CallOption) (*UpdateHandScoresResponse, error) {
 	out := new(UpdateHandScoresResponse)
 	err := c.cc.Invoke(ctx, "/app.services.hand.v1.HandService/UpdateHandScores", in, out, opts...)
@@ -102,9 +90,6 @@ type HandServiceServer interface {
 	// FetchHandScore fetches a hand by hand's ID.
 	// If hand's ID is not in DB, return not found error.
 	FetchHandScore(context.Context, *FetchHandScoreRequest) (*FetchHandScoreResponse, error)
-	// UpdateHand updates a hand.
-	// If there is no hand ID in DB, return a not found error.
-	UpdateHand(context.Context, *UpdateHandRequest) (*UpdateHandResponse, error)
 	// UpdateHandScores updates scores of a hand.
 	// If there is no hand ID in DB, return a not found error.
 	// If scores are invalid, return a invalid argument error.
@@ -123,9 +108,6 @@ func (UnimplementedHandServiceServer) FetchHands(context.Context, *FetchHandsReq
 }
 func (UnimplementedHandServiceServer) FetchHandScore(context.Context, *FetchHandScoreRequest) (*FetchHandScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchHandScore not implemented")
-}
-func (UnimplementedHandServiceServer) UpdateHand(context.Context, *UpdateHandRequest) (*UpdateHandResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateHand not implemented")
 }
 func (UnimplementedHandServiceServer) UpdateHandScores(context.Context, *UpdateHandScoresRequest) (*UpdateHandScoresResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateHandScores not implemented")
@@ -196,24 +178,6 @@ func _HandService_FetchHandScore_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _HandService_UpdateHand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateHandRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(HandServiceServer).UpdateHand(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/app.services.hand.v1.HandService/UpdateHand",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HandServiceServer).UpdateHand(ctx, req.(*UpdateHandRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _HandService_UpdateHandScores_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateHandScoresRequest)
 	if err := dec(in); err != nil {
@@ -250,10 +214,6 @@ var HandService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchHandScore",
 			Handler:    _HandService_FetchHandScore_Handler,
-		},
-		{
-			MethodName: "UpdateHand",
-			Handler:    _HandService_UpdateHand_Handler,
 		},
 		{
 			MethodName: "UpdateHandScores",

@@ -5,7 +5,12 @@ import (
 	"fmt"
 )
 
-var errNilPlayer = errors.New("player is nil")
+var (
+	errNilPlayer             = errors.New("player is nil")
+	errNilHand               = errors.New("hand is nil")
+	errNilPlayerScore        = errors.New("player score is nil")
+	errNilHalfRoundGameScore = errors.New("half round game score is nil")
+)
 
 type InvalidArgumentError struct {
 	msg string

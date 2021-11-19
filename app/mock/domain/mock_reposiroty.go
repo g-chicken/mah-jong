@@ -162,6 +162,21 @@ func (mr *MockHalfRoundGameRepositoryMockRecorder) CreateHalfRoundGames(c, handI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateHalfRoundGames", reflect.TypeOf((*MockHalfRoundGameRepository)(nil).CreateHalfRoundGames), c, handID, halfRoundGameScores)
 }
 
+// GetHalfRoundGameScoreByHandIDAndGameNumber mocks base method.
+func (m *MockHalfRoundGameRepository) GetHalfRoundGameScoreByHandIDAndGameNumber(c context.Context, handID uint64, gameNumber uint32) (domain.HalfRoundGameScore, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetHalfRoundGameScoreByHandIDAndGameNumber", c, handID, gameNumber)
+	ret0, _ := ret[0].(domain.HalfRoundGameScore)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetHalfRoundGameScoreByHandIDAndGameNumber indicates an expected call of GetHalfRoundGameScoreByHandIDAndGameNumber.
+func (mr *MockHalfRoundGameRepositoryMockRecorder) GetHalfRoundGameScoreByHandIDAndGameNumber(c, handID, gameNumber interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHalfRoundGameScoreByHandIDAndGameNumber", reflect.TypeOf((*MockHalfRoundGameRepository)(nil).GetHalfRoundGameScoreByHandIDAndGameNumber), c, handID, gameNumber)
+}
+
 // GetHalfRoundGameScoresByHandID mocks base method.
 func (m *MockHalfRoundGameRepository) GetHalfRoundGameScoresByHandID(c context.Context, handID uint64) (domain.HalfRoundGameScores, error) {
 	m.ctrl.T.Helper()
@@ -175,6 +190,20 @@ func (m *MockHalfRoundGameRepository) GetHalfRoundGameScoresByHandID(c context.C
 func (mr *MockHalfRoundGameRepositoryMockRecorder) GetHalfRoundGameScoresByHandID(c, handID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetHalfRoundGameScoresByHandID", reflect.TypeOf((*MockHalfRoundGameRepository)(nil).GetHalfRoundGameScoresByHandID), c, handID)
+}
+
+// UpdateScoreAndRanking mocks base method.
+func (m *MockHalfRoundGameRepository) UpdateScoreAndRanking(c context.Context, handID, playerID uint64, score int, ranking, gameNumber uint32) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateScoreAndRanking", c, handID, playerID, score, ranking, gameNumber)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateScoreAndRanking indicates an expected call of UpdateScoreAndRanking.
+func (mr *MockHalfRoundGameRepositoryMockRecorder) UpdateScoreAndRanking(c, handID, playerID, score, ranking, gameNumber interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateScoreAndRanking", reflect.TypeOf((*MockHalfRoundGameRepository)(nil).UpdateScoreAndRanking), c, handID, playerID, score, ranking, gameNumber)
 }
 
 // MockHandRepository is a mock of HandRepository interface.

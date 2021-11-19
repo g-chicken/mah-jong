@@ -110,3 +110,52 @@ func (r *halfRoundGameRepository) GetHalfRoundGameScoresByHandID(
 
 	return halfRoundGameScores, nil
 }
+
+func (r *halfRoundGameRepository) GetHalfRoundGameScoreByHandIDAndGameNumber(
+	c context.Context, handID uint64, gameNumber uint32,
+) (domain.HalfRoundGameScore, error) {
+	query := "SELECT player_id, score, ranking FROM half_round_games WHERE hand_id = ? AND game_number = ?"
+	args := []interface{}{handID, gameNumber}
+
+	playerScores := make([]*domain.PlayerScore, 0)
+
+	scanFunc := func(rows *sql.Rows) error {
+		var (
+			playerID uint64
+			score    int
+			ranking  uint32
+		)
+
+		for rows.Next() {
+			if err := rows.Scan(&playerID, &score, &ranking); err != nil {
+				return err
+			}
+
+			playerScores = append(playerScores, domain.NewPlayerScore(playerID, score, ranking))
+		}
+
+		return nil
+	}
+
+	ope := r.repo.GetRDBOperator(c)
+
+	if err := ope.Select(c, query, args, scanFunc); err != nil {
+		return nil, err
+	}
+
+	return playerScores, nil
+}
+
+func (r *halfRoundGameRepository) UpdateScoreAndRanking(
+	c context.Context, handID, playerID uint64, score int, ranking, gameNumber uint32,
+) error {
+	query := "UPDATE half_round_games SET score = ?, ranking = ? WHERE hand_id = ? AND player_id = ? AND game_number = ?"
+	args := []interface{}{score, ranking, handID, playerID, gameNumber}
+	ope := r.repo.GetRDBOperator(c)
+
+	if _, err := ope.Exec(c, query, args...); err != nil {
+		return err
+	}
+
+	return nil
+}

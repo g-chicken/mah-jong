@@ -16,7 +16,7 @@ func TestHalfRoundGameScores_Validate(t *testing.T) {
 	}{
 		{
 			name: "success",
-			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+			halfRoundGameScores: map[uint32]domain.HalfRoundGameScore{
 				1: {
 					domain.NewPlayerScore(1, 20, 1),
 					domain.NewPlayerScore(2, 10, 2),
@@ -39,7 +39,7 @@ func TestHalfRoundGameScores_Validate(t *testing.T) {
 		},
 		{
 			name: "over 4",
-			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+			halfRoundGameScores: map[uint32]domain.HalfRoundGameScore{
 				1: {
 					domain.NewPlayerScore(1, 20, 1),
 					domain.NewPlayerScore(2, 10, 2),
@@ -63,7 +63,7 @@ func TestHalfRoundGameScores_Validate(t *testing.T) {
 		},
 		{
 			name: "invalid ranking",
-			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+			halfRoundGameScores: map[uint32]domain.HalfRoundGameScore{
 				1: {
 					domain.NewPlayerScore(1, 20, 1),
 					domain.NewPlayerScore(2, 10, 2),
@@ -86,7 +86,7 @@ func TestHalfRoundGameScores_Validate(t *testing.T) {
 		},
 		{
 			name: "sum is not 0",
-			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+			halfRoundGameScores: map[uint32]domain.HalfRoundGameScore{
 				1: {
 					domain.NewPlayerScore(1, 20, 1),
 					domain.NewPlayerScore(2, 10, 2),
@@ -109,7 +109,7 @@ func TestHalfRoundGameScores_Validate(t *testing.T) {
 		},
 		{
 			name: "same player ID",
-			halfRoundGameScores: map[uint32][]*domain.PlayerScore{
+			halfRoundGameScores: map[uint32]domain.HalfRoundGameScore{
 				1: {
 					domain.NewPlayerScore(1, 20, 1),
 					domain.NewPlayerScore(2, 10, 2),

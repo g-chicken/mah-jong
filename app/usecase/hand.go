@@ -82,12 +82,12 @@ func (uc *handUC) FetchHandScore(
 		return nil, nil, nil, err
 	}
 
-	halfRoundGameScores, err := domain.GetHalfRoundGameScoresByHandID(c, handID)
+	handScore, err := hand.GetHalfScore(c)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	return hand, playerIDs, halfRoundGameScores, nil
+	return hand, playerIDs, handScore.GetHalfGameScores(), nil
 }
 
 func (uc *handUC) FetchHands(

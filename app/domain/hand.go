@@ -51,3 +51,26 @@ func (h *Hand) GetTimestamp() time.Time {
 
 	return h.timestamp
 }
+
+// GetHalfScores get scores of half round game in hand.
+func (h *Hand) GetHalfScore(c context.Context) (*HandScore, error) {
+	if h == nil {
+		return nil, errNilHand
+	}
+
+	halfRoundGameScores, err := repos.halfRoundGameRepo.GetHalfRoundGameScoresByHandID(c, h.GetID())
+	if err != nil {
+		return nil, err
+	}
+
+	return NewHandScore(h.GetID(), h.GetTimestamp(), halfRoundGameScores), nil
+}
+
+// GetHalfRoundGameScore get a players' score of a half round game.
+func (h *Hand) GetHalfRoundGameScore(c context.Context, gameNumber uint32) (HalfRoundGameScore, error) {
+	if h == nil {
+		return nil, errNilHand
+	}
+
+	return repos.halfRoundGameRepo.GetHalfRoundGameScoreByHandIDAndGameNumber(c, h.GetID(), gameNumber)
+}

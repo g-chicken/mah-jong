@@ -117,13 +117,6 @@ func (h *handGRPCHandler) FetchHands(
 	return &hand.FetchHandsResponse{Hands: handPBs}, nil
 }
 
-func (h *handGRPCHandler) UpdateHand(
-	c context.Context,
-	req *hand.UpdateHandRequest,
-) (*hand.UpdateHandResponse, error) {
-	return &hand.UpdateHandResponse{}, nil
-}
-
 func (h *handGRPCHandler) UpdateHandScores(
 	c context.Context,
 	req *hand.UpdateHandScoresRequest,
