@@ -68,7 +68,9 @@ func (p *PlayerScore) updateScoreAndRankingByHandIDAndGameNumber(
 		return errNilPlayerScore
 	}
 
-	if err := repos.halfRoundGameRepo.UpdateScoreAndRanking(c, handID, p.GetPlayerID(), score, ranking, gameNumber); err != nil {
+	if err := repos.halfRoundGameRepo.UpdateScoreAndRanking(
+		c, handID, p.GetPlayerID(), score, ranking, gameNumber,
+	); err != nil {
 		return err
 	}
 

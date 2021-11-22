@@ -17,6 +17,7 @@ var (
 		domain.Player{},
 		domain.PlayerScore{},
 		domain.Hand{},
+		domain.HandScore{},
 	)
 	uintArraySort = cmpopts.SortSlices(func(x, y uint64) bool { return x < y })
 	notErrFunc    = func(err error) bool { return err == nil }

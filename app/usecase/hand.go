@@ -60,7 +60,7 @@ func (uc *handUC) CreateHand(
 			}
 
 			// create player scores
-			return domain.CreateHalfRoundGameScores(c, hand.GetID(), halfRoundGameScores)
+			return hand.CreateHalfRoundGameScores(c, halfRoundGameScores)
 		},
 	); err != nil {
 		return nil, nil, err
@@ -71,23 +71,23 @@ func (uc *handUC) CreateHand(
 
 func (uc *handUC) FetchHandScore(
 	c context.Context, handID uint64,
-) (*domain.Hand, []uint64, domain.HalfRoundGameScores, error) {
+) (*domain.HandScore, []uint64, error) {
 	hand, err := domain.GetHandByID(c, handID)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
-	playerIDs, err := domain.ParticipatePlayersInHand(c, handID)
+	playerIDs, err := hand.GetParticipatePlayerIDs(c)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	handScore, err := hand.GetHalfScore(c)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
-	return hand, playerIDs, handScore.GetHalfGameScores(), nil
+	return handScore, playerIDs, nil
 }
 
 func (uc *handUC) FetchHands(
@@ -101,7 +101,7 @@ func (uc *handUC) FetchHands(
 	playerIDsInHand := map[uint64][]uint64{}
 
 	for _, hand := range hands {
-		playerIDs, err := domain.ParticipatePlayersInHand(c, hand.GetID())
+		playerIDs, err := hand.GetParticipatePlayerIDs(c)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -110,4 +110,51 @@ func (uc *handUC) FetchHands(
 	}
 
 	return hands, playerIDsInHand, nil
+}
+
+func (uc *handUC) UpdateHandScore(
+	c context.Context, args *UpdateHandScoreArguments,
+) (*domain.HandScore, []uint64, error) {
+	if args == nil {
+		return nil, nil, domain.NewInvalidArgumentError("arguments is nil")
+	}
+
+	hand, err := domain.GetHandByID(c, args.HandID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	participatePlayerIDs, err := hand.GetParticipatePlayerIDs(c)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	handScore, err := hand.GetHalfScore(c)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(args.PlayerScores) == 0 {
+		return handScore, participatePlayerIDs, nil
+	}
+
+	if err := domain.Transaction(c, func(c context.Context) error {
+		for gameNumber, playerScores := range args.PlayerScores {
+			scores := map[uint64]int{}
+
+			for _, playerScore := range playerScores {
+				scores[playerScore.PlayerID] = playerScore.Score
+			}
+
+			if err := handScore.UpdateScoreAndRanking(c, gameNumber, scores); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}); err != nil {
+		return nil, nil, err
+	}
+
+	return handScore, participatePlayerIDs, nil
 }

@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"fmt"
 )
 
 // HalfRoundGameScore is a score of half round game
@@ -27,14 +26,26 @@ func (s HalfRoundGameScore) updateScoresAndRankings(
 		return errNilHalfRoundGameScore
 	}
 
+	if len(scores) == 0 {
+		return nil
+	}
+
 	updatedHalfRoundGameScore := make(HalfRoundGameScore, 0, len(s))
+	notUpdated := true
 
 	for _, playerScore := range s {
 		score, ok := scores[playerScore.GetPlayerID()]
 		if !ok {
-			updatedHalfRoundGameScore = append(updatedHalfRoundGameScore, playerScore)
+			updatedHalfRoundGameScore = append(
+				updatedHalfRoundGameScore,
+				NewPlayerScore(playerScore.GetPlayerID(), playerScore.GetScore(), playerScore.GetRanking()),
+			)
 
 			continue
+		}
+
+		if notUpdated {
+			notUpdated = playerScore.GetScore() == score
 		}
 
 		updatedHalfRoundGameScore = append(
@@ -43,10 +54,14 @@ func (s HalfRoundGameScore) updateScoresAndRankings(
 		)
 	}
 
+	if notUpdated {
+		return nil
+	}
+
 	updatedHalfRoundGameScore.updateRanking()
 
-	if !updatedHalfRoundGameScore.Validate() {
-		return fmt.Errorf("invalid score")
+	if !updatedHalfRoundGameScore.validate() {
+		return errInvalidScore
 	}
 
 	for i, playerScore := range s {
@@ -67,16 +82,12 @@ func (s HalfRoundGameScore) updateScoresAndRankings(
 // - sum of []*PlayerScore's score is zero.
 // - correct ranking.
 // NOTE: this method can optimize.
-func (s HalfRoundGameScore) Validate() bool {
+func (s HalfRoundGameScore) validate() bool {
 	return s.checkPlayers() && s.checkRanking() && s.checkSamePlayerID() && s.checkSumOfScores()
 }
 
 func (s HalfRoundGameScore) checkPlayers() bool {
-	if len(s) > maxPlayersInHalfGame {
-		return false
-	}
-
-	return true
+	return len(s) <= maxPlayersInHalfGame
 }
 
 func (s HalfRoundGameScore) checkSumOfScores() bool {
@@ -141,7 +152,7 @@ type HalfRoundGameScores map[uint32]HalfRoundGameScore // key is the game number
 
 func (s HalfRoundGameScores) Validate() bool {
 	for _, halfRoundGameScore := range s {
-		if !halfRoundGameScore.Validate() {
+		if !halfRoundGameScore.validate() {
 			return false
 		}
 	}

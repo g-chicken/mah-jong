@@ -28,7 +28,9 @@ type HalfRoundGameRepository interface {
 		c context.Context, handID uint64, halfRoundGameScores HalfRoundGameScores,
 	) error
 	GetHalfRoundGameScoresByHandID(c context.Context, handID uint64) (HalfRoundGameScores, error)
-	GetHalfRoundGameScoreByHandIDAndGameNumber(c context.Context, handID uint64, gameNumber uint32) (HalfRoundGameScore, error)
+	GetHalfRoundGameScoreByHandIDAndGameNumber(
+		c context.Context, handID uint64, gameNumber uint32,
+	) (HalfRoundGameScore, error)
 	UpdateScoreAndRanking(c context.Context, handID, playerID uint64, score int, ranking, gameNumber uint32) error
 }
 

@@ -10,8 +10,3 @@ func CreatePlayerHandPairs(c context.Context, pairs []*CreatePlayerHandArgs) err
 
 	return repos.playerHandRepo.CreatePlayerHandPairs(c, pairs)
 }
-
-// ParticipatePlayersInHands gets IDs of players who participate in hands.
-func ParticipatePlayersInHand(c context.Context, handID uint64) ([]uint64, error) {
-	return repos.playerHandRepo.ParticipatePlayersInHand(c, handID)
-}

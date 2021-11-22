@@ -74,3 +74,21 @@ func (h *Hand) GetHalfRoundGameScore(c context.Context, gameNumber uint32) (Half
 
 	return repos.halfRoundGameRepo.GetHalfRoundGameScoreByHandIDAndGameNumber(c, h.GetID(), gameNumber)
 }
+
+// CreateHalfRoundGameScores creates player scores of the half round game.
+func (h *Hand) CreateHalfRoundGameScores(c context.Context, halfRoundGameScores HalfRoundGameScores) error {
+	if h == nil {
+		return errNilHand
+	}
+
+	return repos.halfRoundGameRepo.CreateHalfRoundGames(c, h.GetID(), halfRoundGameScores)
+}
+
+// GetParticipatePlayerIDs gets IDs of players who participate the hand.
+func (h *Hand) GetParticipatePlayerIDs(c context.Context) ([]uint64, error) {
+	if h == nil {
+		return nil, errNilHand
+	}
+
+	return repos.playerHandRepo.ParticipatePlayersInHand(c, h.GetID())
+}

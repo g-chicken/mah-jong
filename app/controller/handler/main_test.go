@@ -20,6 +20,7 @@ var (
 		hand.CreateHandResponse{},
 		hand.FetchHandScoreResponse{},
 		hand.FetchHandsResponse{},
+		hand.UpdateHandScoreResponse{},
 		hand.Hand{},
 		hand.FetchHandScoreResponse{},
 		hand.HandScore{},

@@ -50,11 +50,17 @@ func (h *HandScore) GetHalfGameScores() HalfRoundGameScores {
 	return h.halfRoundGameScores
 }
 
-// CreateHalfRoundGameScores creates player scores of the half round game.
-func CreateHalfRoundGameScores(
-	c context.Context,
-	handID uint64,
-	halfRoundGameScores HalfRoundGameScores,
-) error {
-	return repos.halfRoundGameRepo.CreateHalfRoundGames(c, handID, halfRoundGameScores)
+// UpdateScoreAndRanking updates score and ranking in hand.
+// scores of arguments is [player ID] = score.
+func (h *HandScore) UpdateScoreAndRanking(c context.Context, gameNumber uint32, scores map[uint64]int) error {
+	if h == nil {
+		return errNilHandScore
+	}
+
+	halfRoundScore, ok := h.GetHalfGameScores()[gameNumber]
+	if !ok {
+		return nil
+	}
+
+	return halfRoundScore.updateScoresAndRankings(c, h.GetID(), gameNumber, scores)
 }

@@ -27,10 +27,10 @@ type HandServiceClient interface {
 	// FetchHandScore fetches a hand by hand's ID.
 	// If hand's ID is not in DB, return not found error.
 	FetchHandScore(ctx context.Context, in *FetchHandScoreRequest, opts ...grpc.CallOption) (*FetchHandScoreResponse, error)
-	// UpdateHandScores updates scores of a hand.
+	// UpdateHandScore updates scores of a hand.
 	// If there is no hand ID in DB, return a not found error.
 	// If scores are invalid, return a invalid argument error.
-	UpdateHandScores(ctx context.Context, in *UpdateHandScoresRequest, opts ...grpc.CallOption) (*UpdateHandScoresResponse, error)
+	UpdateHandScore(ctx context.Context, in *UpdateHandScoreRequest, opts ...grpc.CallOption) (*UpdateHandScoreResponse, error)
 }
 
 type handServiceClient struct {
@@ -68,9 +68,9 @@ func (c *handServiceClient) FetchHandScore(ctx context.Context, in *FetchHandSco
 	return out, nil
 }
 
-func (c *handServiceClient) UpdateHandScores(ctx context.Context, in *UpdateHandScoresRequest, opts ...grpc.CallOption) (*UpdateHandScoresResponse, error) {
-	out := new(UpdateHandScoresResponse)
-	err := c.cc.Invoke(ctx, "/app.services.hand.v1.HandService/UpdateHandScores", in, out, opts...)
+func (c *handServiceClient) UpdateHandScore(ctx context.Context, in *UpdateHandScoreRequest, opts ...grpc.CallOption) (*UpdateHandScoreResponse, error) {
+	out := new(UpdateHandScoreResponse)
+	err := c.cc.Invoke(ctx, "/app.services.hand.v1.HandService/UpdateHandScore", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,10 +90,10 @@ type HandServiceServer interface {
 	// FetchHandScore fetches a hand by hand's ID.
 	// If hand's ID is not in DB, return not found error.
 	FetchHandScore(context.Context, *FetchHandScoreRequest) (*FetchHandScoreResponse, error)
-	// UpdateHandScores updates scores of a hand.
+	// UpdateHandScore updates scores of a hand.
 	// If there is no hand ID in DB, return a not found error.
 	// If scores are invalid, return a invalid argument error.
-	UpdateHandScores(context.Context, *UpdateHandScoresRequest) (*UpdateHandScoresResponse, error)
+	UpdateHandScore(context.Context, *UpdateHandScoreRequest) (*UpdateHandScoreResponse, error)
 }
 
 // UnimplementedHandServiceServer should be embedded to have forward compatible implementations.
@@ -109,8 +109,8 @@ func (UnimplementedHandServiceServer) FetchHands(context.Context, *FetchHandsReq
 func (UnimplementedHandServiceServer) FetchHandScore(context.Context, *FetchHandScoreRequest) (*FetchHandScoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchHandScore not implemented")
 }
-func (UnimplementedHandServiceServer) UpdateHandScores(context.Context, *UpdateHandScoresRequest) (*UpdateHandScoresResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateHandScores not implemented")
+func (UnimplementedHandServiceServer) UpdateHandScore(context.Context, *UpdateHandScoreRequest) (*UpdateHandScoreResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateHandScore not implemented")
 }
 
 // UnsafeHandServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -178,20 +178,20 @@ func _HandService_FetchHandScore_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _HandService_UpdateHandScores_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateHandScoresRequest)
+func _HandService_UpdateHandScore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateHandScoreRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HandServiceServer).UpdateHandScores(ctx, in)
+		return srv.(HandServiceServer).UpdateHandScore(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/app.services.hand.v1.HandService/UpdateHandScores",
+		FullMethod: "/app.services.hand.v1.HandService/UpdateHandScore",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HandServiceServer).UpdateHandScores(ctx, req.(*UpdateHandScoresRequest))
+		return srv.(HandServiceServer).UpdateHandScore(ctx, req.(*UpdateHandScoreRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -216,8 +216,8 @@ var HandService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _HandService_FetchHandScore_Handler,
 		},
 		{
-			MethodName: "UpdateHandScores",
-			Handler:    _HandService_UpdateHandScores_Handler,
+			MethodName: "UpdateHandScore",
+			Handler:    _HandService_UpdateHandScore_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -116,9 +116,20 @@ type CreateHandArgumentsPlayerScore struct {
 	GameNumber uint32
 }
 
+type UpdateHandScoreArguments struct {
+	HandID       uint64
+	PlayerScores map[uint32][]*UpdateHandScoreArgumentPlayerScore // key is game number
+}
+
+type UpdateHandScoreArgumentPlayerScore struct {
+	PlayerID uint64
+	Score    int
+}
+
 // HandUsecase defines usecase of hand.
 type HandUsecase interface {
 	CreateHand(c context.Context, args *CreateHandArguments) (*domain.Hand, []uint64, error)
-	FetchHandScore(c context.Context, handID uint64) (*domain.Hand, []uint64, domain.HalfRoundGameScores, error)
+	FetchHandScore(c context.Context, handID uint64) (*domain.HandScore, []uint64, error)
 	FetchHands(c context.Context) ([]*domain.Hand, map[uint64][]uint64 /*  [hand ID] = {plyer IDs} */, error)
+	UpdateHandScore(c context.Context, args *UpdateHandScoreArguments) (*domain.HandScore, []uint64, error)
 }

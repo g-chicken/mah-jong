@@ -9,7 +9,10 @@ var (
 	errNilPlayer             = errors.New("player is nil")
 	errNilHand               = errors.New("hand is nil")
 	errNilPlayerScore        = errors.New("player score is nil")
+	errNilHandScore          = errors.New("hand score is nil")
 	errNilHalfRoundGameScore = errors.New("half round game score is nil")
+
+	errInvalidScore = errors.New("invalid score")
 )
 
 type InvalidArgumentError struct {

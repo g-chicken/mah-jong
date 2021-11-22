@@ -184,7 +184,7 @@ func TestPlayerRepository_CreatePlayer_error(t *testing.T) {
 	}
 }
 
-func TestPlayerRepository_GetPlayerByID(t *testing.T) { // nolint:dupl
+func TestPlayerRepository_GetPlayerByID(t *testing.T) { 
 	t.Parallel()
 
 	testCases := []struct {
@@ -251,7 +251,7 @@ func TestPlayerRepository_GetPlayerByID(t *testing.T) { // nolint:dupl
 	}
 }
 
-func TestPlayerRepository_GetPlayerByName(t *testing.T) { // nolint:dupl
+func TestPlayerRepository_GetPlayerByName(t *testing.T) { 
 	t.Parallel()
 
 	testCases := []struct {
