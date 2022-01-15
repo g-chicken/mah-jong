@@ -1,13 +1,16 @@
+BIN=$$(pwd)/bin
+GOBIN=$(if $$(go env GOBIN),$$(go env GOPATH)/bin,$$(go env GOBIN))
+
 setup:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.42.0
-	curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.27.3
-	go install github.com/golang/mock/mockgen@v1.6.0
+	if [ ! -e $(BIN)/golangci-lint ]; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(BIN) v1.42.0; fi
+	if [ ! -e $(BIN)/air ]; then curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(BIN) v1.27.3; fi
+	if [ ! -e $(GOBIN)/mockgen ]; then go install github.com/golang/mock/mockgen@v1.6.0; fi
 
 run:
-	air -c .air.toml
+	$(BIN)/air -c .air.toml
 
 lint:
-	$$(go env GOPATH)/bin/golangci-lint run --fix --allow-parallel-runners ./...
+	$(BIN)/golangci-lint run --fix --allow-parallel-runners ./...
 
 test:
 	go test -cover -parallel 5 -count 1 ./...

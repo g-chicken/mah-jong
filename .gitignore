@@ -1,2 +1,5 @@
+bin/migrate
+bin/buf
+
+bin/include/**/*
 tmp/**/*
-app/tmp/**/*

@@ -63,16 +63,16 @@ docker-compose exec -T db mysql -u root -phoge < ./rdb/data.sql
 echo
 echo "ok"
 
-## up app
-#echo
-#echo "up app"
-#docker-compose up -d app
-#if [ $? -ne 0 ]; then
-#  echo "fail to up app"
-#  echo "down docker host"
-#  docker-compose down
-#  exit 1
-#fi
+# up app
+echo
+echo "up app"
+docker-compose up -d app
+if [ $? -ne 0 ]; then
+  echo "fail to up app"
+  echo "down docker host"
+  docker-compose down
+  exit 1
+fi
 
 echo
 echo "done"
